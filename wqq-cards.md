@@ -1,0 +1,3055 @@
+
+####文档写作统一规范：
+
+1，空格： 用两个&#8195; 半空格，用&#8198;
+
+2，标题：用###
+
+3，行内公公式使用两个\$,行间公式使用四个$。公式处，必须使用公式符号，其他地方，若非引起歧义，尽可能少的使用公式符号。
+
+4，图片引用格式：![图片编号，如9_1](图片网址)
+中括号中写入图片的标题。当图片加载不出时，会显示中括号内的内容。
+
+
+[TOC]
+
+
+####机器学习的300个概念
+
+翻译：
+sspku：lcx、wdw、wgw、wqq、zcj、zzx
+tutor：wgr
+
+####1.Adaboost（自适应梯度提升）
+edit  by wqq
+- ##### <font color='#ef5b9c'>1. 什么是Boost（提升）算法？
+    - 在概率近似正确学习框架中，如果一个类或者一个概念，存在一个多项式的算法能学习它，而且正确率很高，那么，那么这个概念就是强可学习的，如果正确率只比随机猜测的略好，那这个概念就是弱可学习的。那么 <font color="red">将一个弱学习算法提升为强学习算法的技术就叫做提升(Boost)算法</font>，典型的是AdaBoost算法。大多数提升算法都是改变训练数据的概率分布（也就是数据权重）和弱分类器加权得到。
+    ![1_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-1.jpg?raw=true)
+
+	- 提升算法的两个核心概念：
+        1. 如何改变训练样本的权值或概率分布
+        2. 如何将弱分类器组成强分类器
+- ##### <font color='#ef5b9c'>2. AdaBoost如何自适应地调整参数？
+    - AdaBoost算法的提升思路：
+        - 对第一个问题，AdaBoost的方法是提高那些被在前一轮中被弱分类器错误分类的样本的权重，
+        降低那些被正确分类的样本的权重，这样被错误分类的样本将在下次分类中得到更多的关注。
+        - 对第二个问题，AdaBoost通过加大误分类小的弱分类器的权值，减少误分类大的弱分类器的权值。
+    - AdaBoost算法的自适应过程：
+        - 初始训练样本的权值$w_{1i}=\frac{1}{N}$，权重向量为：$$D_1=\{\frac{1}{N},\frac{1}{N},\cdots,\frac{1}{N}\}$$
+        - 基本分类器$G_m(x)$的权值为：
+            $$\alpha_m=log\frac{1-e_m}{e_m}$$
+            其中$e_m$是分类误差率，$e_m=\frac{1}{N}\sum I_m(G_m(x_i)\neq y_i)$ ----- ###
+        - 样本权重的更新：
+            $$w_{m+1,i}=\frac{w_{m,i}exp(-\alpha_my_iG_m(x))}{\sum_{i=1}^{N}w_{m,i}exp(-\alpha_my_iG_m(x))}$$
+        - 基本分类器权重的更新：
+            重新执行###步骤。
+        - 最终分类器$G(x)$为基本分类器的线性组合：
+            $$G(x)=sign(f(x))=sign(\sum_{m=1}^{M}\alpha_mG_m(x))$$
+        - 更新过程终止可以设立两个阈值：最大更新次数或者是误分类率。
+
+####2.Avoid Overfiting:
+
+####3,Hamming Loss
+by lcx
+3.Hamming Loss 海明距离
+
+![3](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-3.jpg)
+
+海明距离（Hamming Distance）用于需要对样本多个标签进行分类的场景。对于给定的样本i，$\hat{y}\underset{ij}{ }$是对第j个标签的预测结果，$y\underset{ij}{ }$是第j个标签的真实结果，L是标签数量，则$\hat{y}\underset{i}{ }$与$y\underset{i}{ }$间的海明距离为
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/3_1.jpg)
+
+其中1(x)是indicator function。当预测结果与实际情况完全相符时，距离为0；当预测结果与实际情况完全不符时，距离为1；当预测结果是实际情况的真子集或真超集时，距离介于0到1之间。
+
+我们可以通过对所有样本的预测情况求平均得到算法在测试集上的总体表现情况，当标签数量L为1时，它等于1-Accuracy，当标签数L>1时也有较好的区分度，不像准确率那么严格。
+
+####4,handing imbalanced
+by-wgw
+![4](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-4.jpg?raw=true)
+什么是不平衡数据：
+不平衡对于分类问题来说是指数据集中样本的类别不平均。
+
+比如， 对于一个样本总数为100的二分类问题来说，80个样本被标为类别1，剩下的20个样本被标为类别2.这是一个不平衡的数据集，因为类别1比类别2的样本总数为4:1.
+
+不仅仅是二分类问题有类别不平衡问题，多分类问题也存在类别不平衡的问题。
+
+不平衡问题很常见
+大部分的分类数据集中各类别的样本总数不会绝对一样，但是稍稍有一些差别无妨。
+
+比如，描述欺诈性交易的数据集是不平衡的。绝大多数的交易记录是“正常”，只有很小一部分是“欺诈”。
+
+另一个例子是顾客流失（customer churn）数据集，绝大多数的顾客不会流失，只有一小部分顾客会取消订阅（“流失”）。
+
+当类别不平衡的的比例比较大时，比如接近4:1，不平衡就会导致机器学习算法出问题。
+
+把所有的结果都归为一类
+当模型训练不平衡数据集的时候会发生什么？
+
+就如你可能会猜想的那样，在不平衡数据集上我们仍然可能会得到很高的准确率。若90%的样本是类别1，那么模型的准确率就会接近90%。因为先验概率决定一个样本被标为类别1的概率是90%，所以模型就会总是将样本标为类别1并得到高的准确率。
+
+那么在支持向量机模型中怎么处理数据不平衡的问题呢？
+一个可用的方法是引入代价敏感因子，设计出代价敏感的分类算法。通常对小样本赋予较高的代价，大样本赋予较小的代价，期望以此来平衡样本之间的数目差异。
+比如在支持向量机中，调整超参数C，
+即$$C_k=C*(1-w_k)$$
+其中$w_k$是数据集中k类别的数量比例。这样，k类别的数量比例越大，其惩罚参数越小，k类别的数量比例越小，其惩罚参数越大，可以使模型有效的平衡不平衡数据集带来的影响。
+
+
+
+
+
+参考资料：
+https://blog.csdn.net/lime1991/article/details/47952505
+####5,handling outliers
+####6,hessian matrix
+####7,heteroskedasticity
+####8.Hidden Layer
+-by zcj
+![8](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-8.jpg?raw=true)
+
+&#8195;&#8195;类神经网路（neural network），简单来说想要模拟人类大脑神经的方式来达到复杂的学习效果 。一个简单的神经网路模型如下：
+![Alt text](./Hidden Layer_神经网路模型.jpeg)
+
+&#8195;&#8195;神经网路是由许许多多的神经元（neuron）所组成，也就是图中那些圆形．每个神经元或多或少会跟其他的神经元有所连结， 在机器学习里面会把神经元归纳在以下三个layer里面：
+&#8195;&#8195;1、Input Layer：里面每个神经元可以想像成某笔训练资料的所有特征，以图中例子资料会有x1跟x2两个特征。
+&#8195;&#8195;2、Output Layer：某笔训练资料对应的输出结果，若是二元分类问题或是回归问题通常在Output层只会有一个神经元，而在做多元分类的时候就会有多个神经元当作输出。
+&#8195;&#8195;3、Hidden Layer:非Input Layer跟Output Layer的中间层一律归类在Hidden Layer(不是资料的输入也不是资料的输出，所以名为Hidden Layer。每一个隐藏层可以对上一层的输出进行非线性变换, 因此深度神经网络拥有比“浅层”网络拥有更加优异的表达能力)
+Input Layer跟Output Layer只会有一层，而Hidden Layer根据设计可以有很多层，而除了Output Layer以外，会在每一层加上一个bias的神经元当作一个常数，这样一来每神经元的运算就能变成机器学习里面常用的数学公式：
+$$z=w_1x_1+w_2x_2+···+w_nx_n+bias$$
+&#8195;&#8195;至于为什么需要神经网路，什么样的情况下适用神经网路，一般来说就是当训练资料我们没有办法定义其特征的时候，就可以试着使用神经网路。一些Raw data，像是图片，音波等这些binary档案。因为神经网路的Hidden Layer代表着一层又一层的特征抽取过程，当Hidden Layer很多且设计的还不错的时候，有可能就可以对于那些Raw data抽取出更有物理意义的特征来做学习。这也是一些特征难以定义的应用像是图形辨识、语音辨识、NLP等等喜欢用神经网路当作当作学习的模型的原因。
+
+参考资料：http://terrence.logdown.com/posts/1132631-neural-networks-with-backpropagation-one-notes
+####9.Hinge-Loss
+-by wgw
+&#8195;&#8195;合页损失函数，是支持向量机学习的损失函数，也是支持向量机目标函数的一部分。支持向量机是一种常见的分类器，其一般模型为找出一个超平面$w^*·x+b^*=0$使用决策函数$f(x)=sign(w^*·x+b^*)$对数据集进行分类。其数学表示为最小化以下目标函数：
+$$\sum_{i=1}^N[1-y_i(w·x_i+b)]_++\lambda·||w||^2$$
+
+其中$[1-y_i(w·x_i+b)]_+$下角标$+$代表取正，即当$[]$内值为负时取为0，非负时取原值。相当于$max\{[1-y_i(w·x_i+b)],0\}$,其中$w·x_i+b$代表支持向量机的输出,如果我们以$w$代表这个输出值，以$y$
+表示真实值，则有$max\{[1-y·w,0\}$，那么合页损失函数就是:
+$$L_{Hinge}(w,y)=max\{[1-y·w,0\}$$
+其中$y$取值范围为$\{1,-1\}$,也就是y的真实分类结果，$w$的取值范围为$(-\infty,+\infty)$,我们希望分类器的输出结果$w$能够与$y$一致,但是这是很难的，一般情况下，会出现以下几种情况，这几种情况下损失函数的输出结果代表了，我们对分类情况的评价，使得分类器可以不断的学习进步。
+$1$，$w$与$y$同号，但是$w$的绝对值小于$1$，这时$max\{[1-y·w,0\}$的取值为一个正数，只是这个正数相对于$4$中分类错误的情况给出的损失值不大，是一个大于$0$但是小于$1$的正数，代表这种情况是有一定微小损失的。
+$2$，$w$与$y$同号，并且$w$的绝对值等于$1$，即分类完全正确，这时$max\{[1-y·w,0\}$的取值为零，代表这种情况是没有损失的。
+$3$，$w$与$y$同号，但是$w$的绝对值大于$1$，这时$max\{[1-y·w,0\}$的取值为0，代表这种情况是没有损失的。但是同时这种情况的得分与$2$中是完全一样的，即合页损失函数并不鼓励分类器过度自信。
+$4$，$w$与$y$异号，不管$w$的绝对值大于还是小于$1$，这时$max\{[1-y·w,0\}$的取值均为大于$1$的正数，对于这种严重的分类错误，合叶损失函数给出较大的损失值也是符合逻辑的。
+合页损失函数图像：
+![9_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/9_1.jpeg?raw=true)
+合页损失函数的函数图像因状似合页而得名。
+
+####10.How &#8198Norm &#8198Penalties&#8198Work :
+&#8195&#8195Norm Penalties 范数惩罚，是一种减少参数的值的不一致性的方法。所谓范数类似于“长度”：
+L2范数为$||X||_2=\sqrt{\sum_{i=1}^n{x_i^2}}$是欧式距离。
+L1范数为$||X||_1=\sum_{i=1}^n|{x_i}|$
+L0范数为$||X||_0=\sum_{i=1}^n1({x_i\neq0})$,也就是参数中不为零的元素个数。
+通过L2范数，我们可以使参数尽可能的接近于零，
+L1范数有很多的名字，例如我们熟悉的曼哈顿距离、最小绝对误差等。使用L1范数可以度量两个向量间的差异，L2也可以度量两个向量间的差异，如平方差和。由于L0范数的意义很难明确，所以一般需要优化L0范数的时候都会放宽到L1或者L2.
+####11.how to choose Hiddenunit activation functins
+####12.hyperparameter tuning
+####13.back prop（反向传播）
+edit  by wqq
+- Back Propagation算法有著名的人工智能科学家hinton提出，是多层神经网络的训练中举足轻重的算法。一个多层神经网络是一个多层复合函数，而反向传播就是复合函数的链式法则（在深度学习框架中叫做计算图）。
+	![13_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-13.jpg?raw=true)
+
+- 反向传播算法通过计算图（tensorflow框架中是这样的），基于梯度下降法，将损失函数的信息反向传递，不断调整各层参数，以达到最优的拟合参数。反向传播可以用于任何基于梯度的优化器，如L-BFGS或截断的牛顿。
+
+####14.Hyperplane(超平面)
+![14](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-14.jpg?raw=true)
+
+&#8195;&#8195;一個n-1維的超平面可以分開一個n維的空間。
+&#8195;&#8195;舉例：一維超平面（直線）可以分開一個二維空間，二維超平面可以分開一個三維空間。
+
+&#8195;&#8195;應用：故事是这样子的，在很久以前的情人节，大侠要去救他的爱人，但魔鬼和他玩了一个游戏。魔鬼在桌子上似乎有规律放了两种颜色的球，说：“你用一根棍分开它们？要求：尽量在放更多球之后，仍然适用。”
+![14_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/14_1.jpeg?raw=true)
+&#8195;&#8195;于是大侠这样放，干的不错？
+![14_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/14_2.jpeg?raw=true)
+&#8195;&#8195;然后魔鬼，又在桌上放了更多的球，似乎有一个球站错了阵营。
+![14_3](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/14_3.jpeg?raw=true)
+&#8195;&#8195;SVM就是试图把棍放在最佳位置，好让在棍的两边有尽可能大的间隙。
+![14_4](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/14_4.jpeg?raw=true)
+&#8195;&#8195;现在即使魔鬼放了更多的球，棍仍然是一个好的分界线。
+![14_5](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/14_5.jpeg?raw=true)
+然后，在SVM 工具箱中有另一个更加重要的 trick。 魔鬼看到大侠已经学会了一个trick，于是魔鬼给了大侠一个新的挑战。
+![14_6](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/14_6.jpeg?raw=true)
+现在，大侠没有棍可以很好帮他分开两种球了，现在怎么办呢？当然像所有武侠片中一样大侠桌子一拍，球飞到空中。然后，凭借大侠的轻功，大侠抓起一张纸，插到了两种球的中间。
+![14_7](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/14_7.jpeg?raw=true)
+现在，从魔鬼的角度看这些球，这些球看起来像是被一条曲线分开了。
+![14_8](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/14_8.jpeg?raw=true)
+再之后，无聊的大人们，把这些球叫做 「data」，把棍子叫做 「classifier」, 最大间隙trick叫做「optimization」， 拍桌子叫做「kernelling」, 那张纸叫做「hyperplane」。
+参考资料：https://blog.csdn.net/sinat_35512245/article/details/54981721
+
+
+#####15.hypothesis space 假设空间
+-by lcx
+![15](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-15.jpg)
+翻译：
+假设空间：监督学习的目的在于学习一个由输入到输出的映射，这一映射由模型来表示。换句话说，学习的目的就在于找到最好的这样的模型。模型属于由输入空间到输出空间的映射集合，这个集合就是假设空间（hypothesis space）。假设空间的确定意味着学习范围的确定。
+
+**假设空间与样本空间的关系**
+
+假设空间是理论上的所有可能属性值构成的集合空间；
+样本空间通常指训练数据中实际出现的所有属性值构成的集合空间。
+
+个人理解和看法。样本空间是一个由所有可能的输入样本的特征向量所构成的空间，如果要讨论的话应该不能说他们之间有什么区别，应该是讲二者有什么关系。样本空间和假设空间的关系应该是假设空间中的一个映射将样本空间中的特征向量映射到输出空间中。
+
+####16.iid（独立同分布）：
+by-wgw
+![16](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-16.jpg?raw=true)
+独立同分布：
+相互独立并且服从同一分布。
+独立的：
+每一次观察都是一次独立的事件。随机变量X1和X2独立,是指X1的取值不影响X2的取值,X2的取值也不影响X1的取值.
+同一分布：
+每一次的观察都是从同一种概率分布集中的抽取。
+随机变量X1和X2同分布,意味着X1和X2具有相同的分布形状和相同的分布参数,对离散随机变量具有相同的分布律,对连续随机变量具有相同的概率密度函数,有着相同的分布函数,相同的期望、方差。
+说明：独立同分布是机器学习中的一个重要的假设，机器学习模型在训练集中训练出的模型如何能够在测试集中有效，就是基于训练集和测试集的数据是独立同分布的。
+关于独立同分布，西瓜书这样解释道：
+输入空间中的所有样本服从一个隐含未知的分布，训练数据所有样本都是独立地从这个分布上采样而得。
+那为什么非要有这个假设呢？
+我们知道，机器学习就是利用当前获取到的信息（或数据）进行训练学习，用以对未来的数据进行预测、模拟。所以都是建立在历史数据之上，采用模型去拟合未来的数据。因此需要我们使用的历史数据具有总体的代表性。
+
+为什么要有总体代表性？我们要从已有的数据（经验） 中总结出规律来对未知数据做决策，如果获取训练数据是不具有总体代表性的，就是特例的情况，那规律就会总结得不好或是错误，因为这些规律是由个例推算的，不具有推广的效果。
+
+通过独立同分布的假设，就可以大大减小训练样本中个例的情形。
+
+机器学习并不总是要求数据同分布。在不少问题中要求样本（数据）采样自同一个分布是因为希望用训练数据集训练得到的模型可以合理用于测试集，使用同分布假设能够使得这个做法解释得通。
+
+由于现在的机器学习方向的内容已经变得比较广，存在不少机器学习问题并不要求样本同分布，比如一些发表在机器学习方向上的online算法就对数据分布没啥要求，关心的性质也非泛化性。
+
+
+参考资料：
+https://blog.csdn.net/frbevrqbn4l/article/details/79372973
+####17.imputation
+####18.imputing missing values
+####19.inflestion point（拐点）
+edit  by wqq
+- 拐点是函数凹凸性变更的点，在拐点的两侧函数的凹凸性是不同的。
+![19_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-19.jpg?raw=true)
+
+- $x=x_0$是拐点的判断条件是函数满足$f^{''}(x_0)=0,f^{'''}(x_0)\neq 0$，或者$f^{''}(x)$在$x=x_0$左右两侧异号。
+####20.initialization of neural net parameters
+#####21.initializing weights in feedforward neural networks 在前馈神经网络中初始化权重
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-21.jpg)
+翻译
+1. 用小的随机数初始化
+2. 常见的从正态分布中提取出的权重。
+3. 偏差初始化为零或小正数
+
+#####权值初始化的意义
+一个好的权值初始值，有以下优点:
+
+- 加快梯度下降的收敛速度
+- 增加梯度下降到最小训练误差的几率
+
+参数初始化的目的是为了让神经网络在训练过程中学习到有用的信息，这意味着参数梯度不应该为0。所以参数初始化要满足两个必要条件:(1)各个激活层不会出现饱和现象，比如对于sigmoid激活函数，初始化值不能太大或太小，导致陷入其饱和区。（2）各个激活值不为0，如果激活层输出为零，也就是下一层卷积层的输入为零，所以这个卷积层对权值求偏导为零，从而导致梯度为0。
+#####权值初始化的方法
+权值初始化的方法主要有：常量初始化（constant）、高斯分布初始化（gaussian）、positive_unitball初始化、均匀分布初始化（uniform）、xavier初始化、msra初始化、双线性初始化（bilinear）
+
+- 常量初始化(constant)
+把权值或者偏置初始化为一个常数，具体是什么常数，可以自己定义
+
+- 高斯分布初始化（gaussian）
+需要给定高斯函数的均值与标准差
+
+- positive_unitball初始化
+让每一个神经元的输入的权值和为 1
+例如：一个神经元有100个输入，让这100个输入的权值和为1.  首先给这100个权值赋值为在（0，1）之间的均匀分布，然后，每一个权值再除以它们的和就可以啦。这么做，可以有助于防止权值初始化过大，从而防止激活函数（sigmoid函数）进入饱和区。所以，它应该比较适合simgmoid形的激活函数
+
+- 均匀分布初始化（uniform）
+将权值与偏置进行均匀分布的初始化，用min 与 max 来控制它们的的上下限，默认为（0，1）
+
+- xavier初始化
+对于权值的分布：均值为0，方差为（1 / 输入的个数） 的 均匀分布。如果我们更注重前向传播的话，我们可以选择 fan_in，即正向传播的输入个数；如果更注重后向传播的话，我们选择 fan_out, 因为在反向传播的时候，fan_out就是神经元的输入个数；如果两者都考虑的话，就选  average = (fan_in + fan_out) /2。对于ReLU激活函数来说，XavierFiller初始化也是很适合。关于该初始化方法，具体可以参考文章1、文章2，该方法假定激活函数是线性的。
+
+- msra初始化
+对于权值的分布：基于均值为0，方差为( 2/输入的个数)的高斯分布；它特别适合 ReLU激活函数，该方法主要是基于Relu函数提出的，推导过程类似于xavier，可以参考博客。
+
+- 双线性初始化（bilinear）
+常用在反卷积神经网络里的权值初始化
+#####参考文献
+[为什么要进行权值初始化](链接：https://www.zhihu.com/question/56526007/answer/371397183)
+[权值初始化的方法](https://blog.csdn.net/u013989576/article/details/76215989)
+####22.instrumental variables
+by-wgw
+![22](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-22.jpg?raw=true)
+
+通俗一点说，回归的思想就是先抓住x，然后观察y将如何变化。比如说居民收入r与消费c，先抓住1000元收入水平的消费群体，然后看他们将如何消费，c|1000是条件随机变量（当然，实际数据中1000元水平的观测可能只有一个）；然后再抓住1500元收入水平的群体，再看他们将如何消费，依次类推。一般来说，随着收入增长，消费的条件均值将同步增长，此时回归关系成立。
+
+但是，令我们苦恼的是，实际中很有可能是“无法抓住x”的，因为x在变，y也在变，然后y的变化又影响到了x，所以我们观测到的结果，很有可能是x与y相互影响的结果；通俗一点说，就是x已经与y纠缠到了一起，你哪里还能辨清哪是x，哪是y？比如说收入与消费，可以说赚得多，花得也多，但钱花完了，又得想办法去多赚点，这时收入与消费是相互影响的，你是无法"按住x"的。因为等你"按住x"了，去观察y，y的变动回过头来又造成了x的变化，你转身一看，坏了，x已经不是原来那个x了，它已经变了！这个相互影响的过程，你是观测不到的，你观测到的只是结果。所以在你观测到实际数据的时候，x已经不是本来的x，x中混杂了y的信息。既然x已经不是本来意义上的x，你又如何去估计它对Y的真实影响？这就是我们通常所说的联立性偏误（simultaneity bias），即x与y是同时变动的。这种情况下，x与回归模型的误差项表现为相关，违背了经典OLS(ordinary least square,普通最小二乘法)的假设。此时，你应该可以知道，你很难估计x对y的真实影响，即在经典回归假设下，估计出的回归系数是有偏的。这是造成内生性 Endogeneity 的情况之一。
+
+* 内生性的原因
+内生性的根源：互为因果、联立性、遗漏变量、测量误差
+总的说来，内生性主要由以下原因造成：
+1. 遗漏变量：如果遗漏的变量与其他解释变量不相关，一般不会造成问题。否则，就会造成解释变量与残差项相关，从而引起内生性问题。
+2. 解释变量与被解释变量相互影响
+3. 度量误差 （measurement error）：由于关键变量的度量上存在误差，使其与真实值之间存在偏差，这种偏差可能会成为回归误差（regression error）的一部分，从而导致内生性问题。
+* 内生性的例子
+工资和受教育水平同时受到能力的影响，然而，即使我们可以通过其他相关的测试得出能力的代理变量，能力是不可直接观测的变量，这就带来了遗漏变量的内生性问题。又比如，在联立方程中，消费和收入同时受一些宏观因素的影响，这就带来了联立方程偏误。还有卡片中的例子，政策与抗议相关，但是又是相互影响的，你很难分清楚哪个是因哪个是果，这就是解释变量与被解释变量相互影响的问题。我们可以通过工具变量的方法来解决内生性的问题。工具变量要与解释变量相关，且与被解释变量不相关，这样就可以观察工具变量来预测被解释变量了。
+
+
+
+参考资料：http://bbs.pinggu.org/thread-5987081-1-1.html
+####23.interaction term
+####24.Bag-of-Words
+-by zcj
+![24](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-24.jpg?raw=true)
+&#8195;&#8195;Bag-of-words模型是信息检索领域常用的文档表示方法。在信息检索中，BoW模型假定对于一个文档，忽略它的单词顺序和语法、句法等要素，将其仅仅看作是若干个词汇的集合，文档中每个单词的出现都是独立的，不依赖于其它单词是否出现。也就是说，文档中任意一个位置出现的任何单词，都不受该文档语意影响而独立选择的。例如有如下两个文档：
+
+1：Bob likes to play basketball, Jim likes too.
+2：Bob also likes to play football games.
+
+基于这两个文本文档，构造一个词典:
+Dictionary={1:'Bob',2:'like',3:'to',4:'play',5:'basketball',6:'also',7:'football',8:'games',9:'Jim',10:'to'}
+
+&#8195;&#8195;这个词典一共包含10个不同的单词，利用词典的索引号，上面两个文档每一个都可以用一个10维向量表示（用整数数字0-n表示某个单词在文档中出现的次数）：
+
+1：[1, 2, 1, 1, 1, 0, 0, 0, 1, 1]
+2：[1, 1, 1, 1 ,0, 1, 1, 1, 0, 0]
+
+&#8195;&#8195;从上述的表示中，可以很清楚地看出来，在文档表示过程中并没有考虑关键词的顺序，而是仅仅将文档看成是一些关键词出现的概率的集合(这是Bag-of-Words模型的缺点之一)，每个关键词之间是相互独立的，这样每个文档可以表示成关键词出现频率的统计集合，类似于直方图的统计表示。
+
+参考资料：http://blog.csdn.net/wsj998689aa/article/details/47089153
+
+####25.Intercept Term（截距项）
+edit  by wqq
+- 截距项也叫做偏差、偏置，在线性回归模型$\hat y=W^TX+b$中，截距项是当输入为零（$X$是0矩阵）时，$\hat y$的值，也即$b$，截距项一般是没有具体意义的，所以在假设检验中，对截距项的显著性水平可以不予关注。但在某些特殊情况下截距项是有意义，比如当$y$表示消费支出时，$b$可以理解为自发性消费支出。通常情况下截距项$b$和自变量$X$是不相关的。
+![25_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-25.jpg?raw=true)
+####26.interpolation
+#####27.IQR 四分位数
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-27.jpg)
+
+- 四分位距（interquartile range, IQR），又称四分差。是描述统计学中的一种方法，以确定第三四分位数和第一二分位数的区别。与方差、标准差一样，表示统计资料中各变量分散情形，但四分差更多为一种稳健统计（robust statistic）。
+- 将所有数值按大小顺序排列并分成四等份,处于三个分割点位置的得分就是四分位数.最小的四分位数称为下四分位数,所有数值中,有四分之一小于下四分位数,四分之三大于下四分位数.中点位置的四分位数就是中位数.最大的四分位数称为上四分位数,所有数值中,有四分之三小于上四分位数,四分之一大于上四分位数.也有叫第25百分位数、第75百分位数的.
+
+- 首先确定四分位数的位置：
+    Q1的位置= (n+1) × 0.25
+    Q2的位置= (n+1) × 0.5
+    Q3的位置= (n+1) × 0.75
+    n表示项数
+
+实例1
+
+    数据总量: 6, 47, 49, 15, 42, 41, 7, 39, 43, 40, 36
+    由小到大排列的结果: 6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49
+    一共11项
+    Q1 的位置=（11+1） × 0.25=3， Q2 的位置=（11+1）× 0.5=6， Q3的位置=（11+1） × 0.75=9
+    Q1 = 15，
+    Q2 = 40，
+    Q3 = 43
+######应用
+
+不论Q1，Q2，Q3的变异量数数值为何，均视为一个分界点，以此将总数分成四个相等部份，可以通过Q1，Q3比较，分析其数据变量的趋势。
+
+四分位数在统计学中的箱线图绘制方面应用也很广泛。所谓箱线图就是 由一组数据5 个特征绘制的一个箱子和两条线段的图形，这种直观的箱线图不仅能反映出一组数据的分布特征，而且还可以进行多组数据的分析比较。这五个特征值，即数据的最大值、最小值、中位数和两个四分位数。即：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/64380cd7912397ddf704b8605982b2b7d0a28750.jpg)
+######参考文献：
+[四分位数](https://baike.baidu.com/item/四分位数/5040599?fr=aladdin)
+
+####28.issues with platt scaline
+![28](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-28.jpg?raw=true)
+####29.
+####30.
+####31. K-fold Cross-Validation（K折交叉验证）
+edit  by wqq
+- 交叉验证是模型选择的其中一种方法，通常在数据量不足的情况下，为了选择好的模型，可以采用交叉验证，交叉验证的基本想法是重复地使用数据。
+    ![31_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-31.jpg?raw=true)
+
+- 交叉验证的做法是，把数据按一定规则切分，将切分的数据组合为训练集和测试集，在此基础上反复地进行训练、测试和模型选择。常用的交叉验证方法有：简单交叉验证，K折交叉验证和留一交叉验证。
+- K折交叉验证的是使用最多的方法，其操作过程如下：首先将数据切分为K个互不相交的大小相同的子集，然后利用K-1个子集的数据训练模型，余下一个子集用于测试模型；将这一过程重复进行K次，最后选出K次评估中平均测试误差最小的模型。
+####32.
+####33.
+####34.K-Nearest Neighbors（K近邻法）：
+by-wgw
+![34](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-34.jpg?raw=true)
+k近邻法(k-nearest neighbor, k-NN)是1967年由Cover T和Hart P提出的一种基本分类与回归方法。它的工作原理是：存在一个样本数据集合，也称作为训练样本集，并且样本集中每个数据都存在标签，即我们知道样本集中每一个数据与所属分类的对应关系。输入没有标签的新数据后，将新的数据的每个特征与样本集中数据对应的特征进行比较，然后算法提取样本最相似数据(最近邻)的分类标签。一般来说，我们只选择样本数据集中前k个最相似的数据，这就是k-近邻算法中k的出处，通常k是不大于20的整数。最后，选择k个最相似数据中出现次数最多的分类，作为新数据的分类。
+举个简单的例子，我们可以使用k-近邻算法分类一个电影是爱情片还是动作片。
+![34_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/34_1.png?raw=true)
+
+上表就是我们已有的数据集合，也就是训练样本集。这个数据集有两个特征，即打斗镜头数和接吻镜头数。除此之外，我们也知道每个电影的所属类型，即分类标签。用肉眼粗略地观察，接吻镜头多的，是爱情片。打斗镜头多的，是动作片。以我们多年的看片经验，这个分类还算合理。如果现在给我一部电影，你告诉我这个电影打斗镜头数和接吻镜头数。不告诉我这个电影类型，我可以根据你给我的信息进行判断，这个电影是属于爱情片还是动作片。而k-近邻算法也可以像我们人一样做到这一点，不同的地方在于，我们的经验更"牛逼"，而k-近邻算法是靠已有的数据。比如，你告诉我这个电影打斗镜头数为2，接吻镜头数为102，我的经验会告诉你这个是爱情片，k-近邻算法也会告诉你这个是爱情片。你又告诉我另一个电影打斗镜头数为49，接吻镜头数为51，我"邪恶"的经验可能会告诉你，这有可能是个"爱情动作片"，画面太美，我不敢想象。 (如果说，你不知道"爱情动作片"是什么？请评论留言与我联系，我需要你这样像我一样纯洁的朋友。) 但是k-近邻算法不会告诉你这些，因为在它的眼里，电影类型只有爱情片和动作片，它会提取样本集中特征最相似数据(最邻近)的分类标签，得到的结果可能是爱情片，也可能是动作片，但绝不会是"爱情动作片"。当然，这些取决于数据集的大小以及最近邻的判断标准等因素。
+
+2、距离度量
+我们已经知道k-近邻算法根据特征比较，然后提取样本集中特征最相似数据(最邻近)的分类标签。那么，如何进行比较呢？比如，我们还是以表1.1为例，怎么判断红色圆点标记的电影所属的类别呢？ 如下图所示。
+![34_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/34_2.png?raw=true)
+
+我们可以从散点图大致推断，这个红色圆点标记的电影可能属于动作片，因为距离已知的那两个动作片的圆点更近。k-近邻算法用什么方法进行判断呢？没错，就是距离度量。这个电影分类的例子有2个特征，也就是在2维实数向量空间，可以使用我们高中学过的两点距离公式计算距离，如下：$$|AB|=\sqrt{(x_1-x_2)^2+(y_1-y_2)^2} $$
+通过计算，我们可以得到如下结果：
+
+(101,20)->动作片(108,5)的距离约为16.55
+(101,20)->动作片(115,8)的距离约为18.44
+(101,20)->爱情片(5,89)的距离约为118.22
+(101,20)->爱情片(1,101)的距离约为128.69
+通过计算可知，红色圆点标记的电影到动作片 (108,5)的距离最近，为16.55。如果算法直接根据这个结果，判断该红色圆点标记的电影为动作片，这个算法就是最近邻算法，而非k-近邻算法。那么k-近邻算法是什么呢？k-近邻算法步骤如下：
+
+计算已知类别数据集中的点与当前点之间的距离；
+按照距离递增次序排序；
+选取与当前点距离最小的k个点；
+确定前k个点所在类别的出现频率；
+返回前k个点所出现频率最高的类别作为当前点的预测分类。
+比如，现在我这个k值取3，那么在电影例子中，按距离依次排序的三个点分别是动作片(108,5)、动作片(115,8)、爱情片(5,89)。在这三个点中，动作片出现的频率为三分之二，爱情片出现的频率为三分之一，所以该红色圆点标记的电影为动作片。这个判别过程就是k-近邻算法。
+参考资料：http://cuijiahua.com/blog/2017/11/ml_1_knn.html
+
+
+
+
+
+
+
+
+####35.
+####36.
+####36.KNN  Neighborhood  Size（KNN邻域尺寸）:
+by-wgw
+![36](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-36.jpg?raw=true)
+&#8195;&#8195;KNN邻域尺寸，指的就是K的取值大小。中国有句古话，近朱者赤，近墨者黑，孔子曰：德不孤必有邻，都是说相近的多少总是有些相似的。K近邻法就是基于这样的思想，以一个点的最近邻的K个点的特征来预测这个点的特征，那么当K越大时，所包围进来的点就越多，那么准确性就会越差，也即是偏差越大，但是方差会越小。反过来当K越小时，所包围进来的点就越少，那么准确性就会越高，也即是偏差越小，但是方差会变大。
+####37.
+####38.
+#####39.L1范式
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-39.jpg)
+L1范数是我们经常见到的一种范数，它的定义如下：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/39_1.jpg)
+
+表示向量x中非零元素的绝对值之和。
+L1范数有很多的名字，例如我们熟悉的曼哈顿距离、最小绝对误差等。使用L1范数可以度量两个向量间的差异，
+
+由于L1范数的天然性质，对L1优化的解是一个稀疏解，因此L1范数也被叫做稀疏规则算子。通过L1可以实现特征的稀疏，去掉一些没有信息的特征
+
+例如在对用户的电影爱好做分类的时候，用户有100个特征，可能只有十几个特征是对分类有用的，大部分特征如身高体重等可能都是无用的，利用L1范数就可以过滤掉。
+######参考文献
+[机器学习中的范数规则化之（一）L0、L1与L2范数、核范数与规则项参数选择](https://blog.csdn.net/u012467880/article/details/52852242)
+
+####40.
+####41.
+####42.
+####43. learning curve（学习曲线）
+edit  by wqq
+- 学习曲线是由训练正确率曲线和验证正确率曲线构成的，它反应了样本数量和模型性能的影响。
+![43_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-43.jpg?raw=true)
+- 通常样本数量越多，模型的表现也会越好，也就是训练正确率和验证\测试正确率也越高。
+- 关于模型评估和参数选择的曲线的绘制，相关关代码如下：
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+import itertools
+from scipy import interp
+
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.pipeline import Pipeline
+
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.model_selection import train_test_split, learning_curve, ShuffleSplit, validation_curve, StratifiedKFold
+from sklearn.metrics import precision_recall_curve, roc_curve, auc, mean_squared_error, confusion_matrix
+
+
+# =============================================================
+##   导入数据
+# =============================================================
+df = pd.read_csv('pydata.csv', header=0)
+
+X = df.ix[:, 0:].values
+y = df.ix[:, 0].values
+
+def plot_learning_curve(estimator, X, y, title='learning_curse',
+                        cv = None, n_jobs = 1,
+                        train_sizes = np.linspace(.1, .9, 9)):
+    '''
+        Draw learning_curve
+    '''
+    # 标准化、模型训练串联
+    cv = ShuffleSplit(n_splits=50, test_size=0.2, random_state=0)
+
+    # case1：学习曲线
+    # 构建学习曲线评估器，train_sizes：控制用于生成学习曲线的样本的绝对或相对数量
+    train_sizes, train_scores, test_scores = learning_curve(estimator= pipe_lr,
+                                                            X= X, y= y,
+                                                            train_sizes= train_sizes, cv=cv, n_jobs=1)
+
+    # print (precision, recall, thresholds)
+    print ('========================= train_scores =============================')
+    print (train_scores.shape)
+    print ('========================= test_scores  =============================')
+    print (test_scores.shape)
+    print ('====================================================================')
+
+    # 统计结果
+    train_mean = np.mean(train_scores, axis=1)
+    train_std = np.std(train_scores, axis=1)
+    test_mean = np.mean(test_scores, axis=1)
+    test_std = np.std(test_scores, axis=1)
+    # 绘制效果
+    plt.figure()
+    plt.title(title)
+
+    plt.plot(train_sizes, train_mean,
+             color='blue', marker='o',
+             markersize=5, label='training accuracy')
+    plt.fill_between(train_sizes,
+                     train_mean + train_std,
+                     train_mean - train_std,
+                     alpha=0.15, color='blue')
+    plt.plot(train_sizes, test_mean,
+             color='green', linestyle='--',
+             marker='s', markersize=5,
+             label='test accuracy')
+    plt.fill_between(train_sizes,
+                     test_mean + test_std, te
+                     st_mean - test_std,
+                     alpha=0.15, color='green')
+
+    plt.grid()
+    plt.xlabel('Number of training samples')
+    plt.ylabel('Accuracy')
+    plt.legend(loc='lower right')
+    plt.ylim([0.4, 1.1])
+    plt.show()
+
+    ## compute accuracy
+    for train_size in train_sizes:
+        X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                            test_size=train_size,
+                                                            random_state=1)
+
+        estimator.fit(X_train, y_train)
+        y_test_hat = estimator.predict(X_test)  # 测试数据
+
+        acc = np.count_nonzero(y_test_hat == y_test)  # True则预测正确，False则预测错误
+        acc /= len(X_test)
+        print (train_size, r' accuracy: %.2f%%' % (100 * acc))
+
+def plot_confusion_matrix(estimator, X, y,
+                          classes,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+    '''
+        confusion_matrix
+    '''
+    plt.figure()
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.30, random_state=1)
+    estimator.fit(X_train, y_train)
+    y_pred = estimator.predict(X_test)
+    cnf_matrix = confusion_matrix(y_test, y_pred)
+    np.set_printoptions(precision=2)
+    plt.imshow(cnf_matrix, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=0)
+    plt.yticks(tick_marks, classes)
+
+    thresh = cnf_matrix.max() / 2.
+    for i, j in itertools.product(range(cnf_matrix.shape[0]), range(cnf_matrix.shape[1])):
+        plt.text(j, i, cnf_matrix[i, j],
+                 horizontalalignment="center",
+                 color="white" if cnf_matrix[i, j] > thresh else "black")
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.show()
+
+
+def plot_roc_curve(estimator, X, y, title='Receiver operating characteristic examplex'):
+    '''
+        ROC curve
+    '''
+    n_samples, n_features = X.shape
+    # Add noisy features
+    random_state = np.random.RandomState(0)
+    X = np.c_[X, random_state.randn(n_samples, 200 * n_features)]
+
+    # Run classifier with cross-validation and plot ROC curves
+    cv = StratifiedKFold(n_splits=6)
+
+    tprs = []
+    aucs = []
+    mean_fpr = np.linspace(0, 1, 100)
+
+    i = 0
+    for train, test in cv.split(X, y):
+        probas_ = estimator.fit(X[train], y[train]).predict_proba(X[test])
+        # Compute ROC curve and area the curve
+        fpr, tpr, thresholds = roc_curve(y[test], probas_[:, 1])
+        tprs.append(interp(mean_fpr, fpr, tpr))
+        tprs[-1][0] = 0.0
+        roc_auc = auc(fpr, tpr)
+        aucs.append(roc_auc)
+        plt.plot(fpr, tpr, lw=1, alpha=0.3,
+                label='ROC fold %d (AUC = %0.2f)' % (i, roc_auc))
+
+        i += 1
+    plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
+            label='Luck', alpha=.8)
+
+    mean_tpr = np.mean(tprs, axis=0)
+    mean_tpr[-1] = 1.0
+    mean_auc = auc(mean_fpr, mean_tpr)
+    std_auc = np.std(aucs)
+    plt.plot(mean_fpr, mean_tpr, color='b',
+            label=r'Mean ROC (AUC = %0.2f $\pm$ %0.2f)' % (mean_auc, std_auc),
+            lw=2, alpha=.8)
+
+    std_tpr = np.std(tprs, axis=0)
+    tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
+    tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
+    plt.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
+                    label=r'$\pm$ 1 std. dev.')
+
+    plt.xlim([-0.05, 1.05])
+    plt.ylim([-0.05, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title(title)
+    plt.legend(loc="lower right")
+    plt.show()
+
+
+def plot_param_validate(estimator, X, y,
+                        param_name=None, param_range=None,
+                        title="Validation Curve",
+                        cv=None, n_jobs=1):
+    '''
+        cross_validate curve
+    '''
+    param_range = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
+
+    train_scores, test_scores = validation_curve(
+        estimator, X, y, param_name=param_name, param_range=param_range,
+        cv=10, scoring="accuracy", n_jobs=1)
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+
+    plt.title(title)
+    # plt.xscale('log')
+    plt.xlabel('Parameter C')
+    plt.ylabel("Score")
+    plt.ylim(0.0, 1.1)
+    lw = 2
+    plt.semilogx(param_range, train_scores_mean, label="Training score",
+                color="darkorange", lw=lw)
+    plt.fill_between(param_range, train_scores_mean - train_scores_std,
+                    train_scores_mean + train_scores_std, alpha=0.2,
+                    color="darkorange", lw=lw)
+    plt.semilogx(param_range, test_scores_mean, label="Cross-validation score",
+                color="navy", lw=lw)
+    plt.fill_between(param_range, test_scores_mean - test_scores_std,
+                    test_scores_mean + test_scores_std, alpha=0.2,
+                    color="navy", lw=lw)
+    plt.legend(loc="best")
+    plt.show()
+
+
+
+pipe_lr = Pipeline([('scl', StandardScaler()),
+                    ('clf', LogisticRegression(random_state=1, penalty='l2'))])
+
+plot_learning_curve(pipe_lr, X, y)
+plot_confusion_matrix(pipe_lr, X, y, classes=[0, 1])
+plot_roc_curve(pipe_lr, X, y)
+# plot_cross_validate(??, X, y)
+```
+<img src='https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/43_2.jpg?raw=true' width=400>
+<img src='https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/43_3.jpg?raw=true' width=400>
+<img src='https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/43_4.jpg?raw=true' width=400>
+####44.
+####45.learning rate 学习率
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-45.jpg)
+
+学习率是一个重要的超参数，它控制着我们基于损失梯度调整神经网络权值的速度，大多数优化算法（如SGD、RMSprop、Adam）对它都有涉及。学习率越小，我们沿着损失梯度下降的速度越慢。从长远来看，这种谨慎慢行的选择可能还不错，因为可以避免错过任何局部最优解，但它也意味着我们要花更多时间来收敛，尤其是如果我们处于曲线的至高点。
+
+以下等式显示了这种关系：
+
+新权值 = 当前权值 - 学习率 × 梯度
+![](http://t11.baidu.com/it/u=2806832323,267517769&fm=173&s=04D0EC33175A51C846F975DA0000C0B2&w=640&h=347&img.JPEG)
+#####过小（上）和过大（下）的学习率
+
+通常，学习率是用户自己随意设的，你可以根据过去的经验或书本资料选择一个最佳值，或凭直觉估计一个合适值。这样做可行，但并非永远可行。事实上选择学习率是一件比较困难的事，下图显示了应用不同学习率后出现的各类情况：
+![](http://t10.baidu.com/it/u=3891758943,1886907092&fm=173&s=09E2E9130D5AD5CE18C595DA0000C0B3&w=459&h=414&img.JPEG)
+可以发现，学习率直接影响我们的模型能够以多快的速度收敛到局部最小值（也就是达到最好的精度）。一般来说，学习率越大，神经网络学习速度越快。如果学习率太小，网络很可能会陷入局部最优；但是如果太大，超过了极值，损失就会停止下降，在某一位置反复震荡。
+
+也就是说，如果我们选择了一个合适的学习率，我们不仅可以在更短的时间内训练好模型，还可以节省各种云的花费。
+#####参考资料：
+[什么是学习率](http://baijiahao.baidu.com/s?id=1591531217345055627&wfr=spider&for=pc)
+####46.Bagging
+by-zzx
+![46](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-46.jpg?raw=true)
+含义:Bootstrap Aggregating（Bagging）是常用的统计学习方法，此算法的核心是将目标训练数据集进行N次Bootstrap采样得到N个训练数据子集，对每个子使用相同的算法分别建立决策树，最终的分类、回归结果是N个决策树的结果多数投票或平均（对于回归问题可以取平均值，对于分类问采多数投票）。
+
+描述 ： 算法不直接作用于模型本身，而是作用在训练数据上。
+原有的训练集，如图中的“Data”，通过有放回的随机抽样方法，（Bootstrap采样），生成N个子训练集，“Datastrapped Data”系列 。对每个子集使用相同的算法分别建立决策树，最终的分类或回归结果是 N个决策树的结果的多数投票或平均。
+
+Bootstrap采样：
+1）采用重抽样技术从原始本中取一定数量（自己给）的，此过程允许重复抽样。
+2）根据抽出的样本计算给定的统计量T。
+3）重复上述N次（一般大于1000），得到N个统计量T。
+4）计算上述N个统计量得到统计量的方差。
+特点：Bagging较单棵决策树来说，降低了方差；但由于将多棵决策树的结果进行了平均，损失了模型的可解释性。
+![46_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zzx%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/46_1.jpeg?raw=true)
+参考资料：
+http://blog.csdn.net/foolsnowman/article/details/51726007
+http://blog.csdn.net/u010158659/article/details/51248877
+####47.
+####48.
+####49.
+####50.
+####51.linearly separable 线性可分离
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-51.jpg)
+
+简单的说就是如果用一个线性函数可以将两类样本完全分开，就称这些样本是“线性可分”的。
+#####如何判断数据是线性可分的？
+最简单的情况是数据向量是一维二维或者三维的，我们可以把图像画出来，直观上就能看出来。
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/51_1.png)
+非常简单就看出两个类的情形下X和O是不是线性可分。
+但是数据向量维度一旦变得很高，我们怎么办？
+
+答案是检查凸包（convex hull）是否相交。
+什么是凸包呢？
+
+简单说凸包就是一个凸的闭合曲线（曲面），而且它刚好包住了所有的数据。
+
+举个例子，下图的蓝色线就是一个恰好包住所有数据的闭合凸曲线。
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/51_2.png)
+知道了什么是凸包，我们就能检查我们的数据是不是线性可分了。
+
+以二维的情况为例，如果我们的数据训练集有两类：M+和M-，
+
+当我们画出两个类的凸包，如果两者不重叠，那么两者线性可分，反之则不是线性可分。
+
+下图就是个线性可分的情况。
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/51_3.png)
+
+#####什么是线性不可分
+
+线性不可分简单来说就是你一个数据集不可以通过一个线性分类器（直线、平面）来实现分类。这样子的数据集在实际应用中是很常见的，例如：人脸图像、文本文档等。下面的几个数据都是线性不可分的：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/51_4.png)
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/51_5.png)
+我们不可以使用一个直线或者一个直面把上面图像中的两类数据很好的划分。这就是线性不可分。
+#####参考文献
+[如何判断数据是线性可分](https://blog.csdn.net/u013300875/article/details/44081067)
+[线性不可分的情况](https://blog.csdn.net/puqutogether/article/details/41309745)
+####52.Log-Sum-Exp（指数函数的和的对数）：
+by-wgw
+![52](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-52.jpg?raw=true)
+假设我们有N个实数quicklatex.png，我们想求下式：
+$$z=log\sum_{n=1}^N{exp\{x_n\}}$$
+
+
+这是非常常见的需求，比如你想用softmax去计算一个多项式分布（多分类逻辑回归）。你要计算对数似然的话，你就得计算上式这种规范化因子。如果quicklatex (2).png很大或很小，朴素的直接计算会上溢出或下溢出，从而导致严重问题。举个例子，对于quicklatex (3).png，直接计算是可行的，我们可以得到1.55。但对于quicklatex (4).png，却并不可行，我们会得到quicklatex (6).png；对于quicklatex (7).png，还是不行，我们会得到quicklatex (9).png。这是怎么回事？很简单，你的浮点数只有64位，在计算指数函数的环节，quicklatex (10).png，会发生上溢出；quicklatex (11).png，会发生下溢出。即便在数学世界上式的值显然不是无穷大，但在计算机的浮点数世界里就是求不出来。怎么办呢？
+
+解决方案很简单：
+
+$$log\sum_{n=1}^N{exp\{x_n\}}=a+log\sum_{n=1}^N{exp\{x_n-a\}}$$
+
+
+
+对任意a都成立，这意味着我们可以自由地调节指数函数的指数部分，一个典型的做法是取$\{x_n\}_{n=1}^N$中的最大值：
+$$a={max} \; x_n$$
+
+
+这可以保证指数最大不会超过0，于是你就不会上溢出。即便剩余的部分下溢出了，你也能得到一个合理的值。
+推导过程：
+![52_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/52_1.png?raw=true)
+参考资料：http://www.hankcs.com/ml/computing-log-sum-exp.html
+
+
+
+####53.
+
+
+
+
+####54.
+####55. sigmoid function（sigmoid函数）
+edit  by wqq
+- sigmoid函数也即逻辑函数，其函数曲线是S型，曲线上所有函数值的取值范围都在0~1之间，其函数方程和函数图像如下如所示。
+![55_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-55.jpg?raw=true)
+- sigmoid函数通常用于分类任务中，也是深度学习领域中最常用的激活函数之一，但是其导数值在$x=0$两边会很快趋近于0，易造成‘梯度消失’现象。
+![55_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/55_2.jpg?raw=true)
+
+####56.Manhattan Distance（曼哈顿距离）
+by-zcj
+![56](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-56.jpg?raw=true)
+![56_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/56_1.jpeg?raw=true)
+&#8195;&#8195;图中红线代表曼哈顿距离，绿色代表欧氏距离，也就是直线距离，而蓝色和黄色代表等价的曼哈顿距离。曼哈顿距离——两点在南北方向上的距离加上在东西方向上的距离，即$d(i,j)=|x_i-x_j|+|y_i-y_j|$。对于一个具有正南正北、正东正西方向规则布局的城镇街道，从一点到达另一点的距离正是在南北方向上旅行的距离加上在东西方向上旅行的距离，因此，曼哈顿距离又称为出租车距离。
+&#8195;&#8195;應用：向 OLS 公式中分別添加一个系数惩罚项， 一個為歐式距離的懲罰項，另一個為曼哈頓距離。
+![56_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/56_2.jpeg?raw=trueg)
+&#8195;&#8195;这就是系数平方和的惩罚项与绝对值和的惩罚项之间的区别。在左图中，随着 λ 变化以及最小点的移动，平方惩罚项产生的切点一般不会落在坐标轴上。Β1 与 β2 都不为 0。相比之下，在右图中，绝对值和惩罚项产生的切点落在了 β2 的轴上。在 β2 轴上，β1=0。一个稀疏的系数向量相当于算法告诉你可以忽略一些因变量。
+
+
+####57. deep learning 深度学习
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-57.jpg)
+翻译
+基础元素
+
+1. 数据
+2. 损失函数 例如：交叉熵
+3. 优化算法 例如：Adam
+4. 网咯架构 例如：稠密层
+5. 测试数据
+6. 评价指标 例如：准确率
+
+#####概念
+深度学习（Deep Learning）（也称为深度结构学习【Deep Structured Learning】、层次学习【Hierarchical Learning】或者是深度机器学习【Deep Machine Learning】）是一类算法集合，是机器学习的一个分支。它尝试为数据的高层次摘要进行建模。
+
+用一个简单的例子来说明
+
+假设你有两组神经元，一个是接受输入的信号，一个是发送输出的信号。当输入层接收到输入信号的时候，它将输入层做一个简单的修改并传递给下一层。在一个深度网络中，输入层与输出层之间可以有很多的层（这些层并不是由神经元组成的，但是它可以以神经元的方式理解），允许算法使用多个处理层，并可以对这些层的结果进行线性和非线性的转换。
+
+#####深度学习的架构
+
+- 生成式深度架构（Generative deep architectures），主要是用来描述具有高阶相关性的可观测数据或者是可见的对象的特征，主要用于模式分析或者是总和的目的，或者是描述这些数据与他们的类别之间的联合分布。（其实就是类似于生成模型）
+
+- 判别式深度架构（Discriminative deep architectures），主要用于提供模式分类的判别能力，经常用来描述在可见数据条件下物体的后验类别的概率。（类似于判别模型）
+
+- 混合深度架构（Hybrid deep architectures），目标是分类，但是和生成结构混合在一起了。比如以正在或者优化的方式引入生成模型的结果，或者使用判别标注来学习生成模型的参数。
+
+实际中对应的模型的例子就是深度前馈网络，卷积网络和递归神经网络（Deep feed-forward networks, Convolution networks and Recurrent Networks)。
+
+- 深度前馈网络（Deep feed-forward networks）
+深度前馈网络也叫做前馈神经网络，或者是多层感知机（Multilayer Perceptrons，MLPs），是深度学习模型中的精粹。
+
+- 前馈网络的目标是近似某些函数。例如，对于一个分类器，y=f(x)来说，它将一个输入值x变成对应的类别y。前馈网络就是定义一个映射y=f(x;θ)，并学习出参数θ使得产生最好的函数近似。
+
+    简而言之，神经网络可以定义成输入层，隐含层和输出层。其中，输入层接受数据，隐含层处理数据，输出层则输出最终结果。这个信息流就是接受x，通过处理函数f，在达到输出y。这个模型并没有任何的反馈连接，因此被称为前馈网络。
+
+- 卷积神经网络（Convolution Neural Networks）
+在机器学习中，卷积神经网络（简称CNN或者ConvNet）是一种前馈神经网络，它的神经元的连接是启发于动物视觉皮层。单个皮质神经元可以对某个有限空间区域的刺激作出反应。这个有限空间可以称为接受域。不同的神经元的接受域可以重叠，从组成了所有的可见区域。那么，一个神经元对某个接受域内的刺激作出反应，在数学上可以使用卷积操作来近似。也就是说，卷积神经网络是受到生物处理的启发，设计使用最少的预处理的多层感知机的变体。
+    卷积神经网络在图像和视频识别、推荐系统以及自然语言处理中都有广泛的运用。
+
+    LeNet是早期推动深度学习发展的卷积神经网络之一。这是Yann LeCun从1988年以来进行的许多词的成功迭代后得到的开创性工作，称之为LeNet5。在当时，LeNet架构主要用来进行字符识别的工作，如读取邮编，数字等。卷积神经网络主要包含四块：卷积层（Convolutional Layer）、激活函数（Activation Function）、池化层（Pooling Layer）、全连接层（Fully Connected Layer）。
+
+  - 卷积层（Convolutional Layer）
+    卷积层是基于单词“卷积（Convolution）”而来，这是一种数学上的操作，它是对两个变量f*g进行操作产生第三个变量。它和互相关（cross-correlation）很像。卷积层的输入是一个m×m×r图像，其中m是图像的高度和宽度，r是通道的数量，例如，一个RGB图像的通道是3，即r=3。卷积层有k个滤波器【filters】（或者称之为核【kernel】），其大小是n×n×q，这里的n是比图像维度小的一个数值，q既可以等于通道数量，也可以小于通道数量，具体根据不同的滤波器来定。滤波器的大小导致了
+
+  - 激活函数（Activation Function）
+    为了实现复杂的映射函数，我们需要使用激活函数。它可以带来非线性的结果，而非线性可以使得我们很好的拟合各种函数。同时，激活函数对于压缩来自神经元的无界线性加权和也是重要的。 激活函数很重要，它可以避免我们把大的数值在高层次处理中进行累加。激活函数有很多，常用的有sigmoid，tanh和ReLU。
+
+  - 池化层（Pooling Layer）
+    池化是一个基于样本的离散化过程。其目的上降低输入表示的采样（这里的输入可以是图像，隐层的输出等），减少它们的维度，并允许我们假设特征已经被包含在了子区域中。
+    这部分的作用是通过提供一种抽象的形式表示来帮助过拟合表示。同样的，它也通过减少了参数的数量降低了计算的复杂度并为内部的表示提供一个基本的不变性的转换。
+目前最常用的池化技术有Max-Pooling、Min-Pooling和Average-Pooling。
+
+  - 连接层（Fully Connected Layer）
+    “全连接”的意思是指先前的层里面的所有的神经元都与后一个层里面的所有的神经元相连。全连接层是一种传统的多层感知机，在输出层，它使用softmax激活函数或者其他激活函数。
+
+  - 递归神经网络（Recurrent Neural Networks）
+    在传统的神经网络中，我们假设所有的输入之间相互独立。但是对于很多任务来说，这并不是一个好的主意。如果你想知道一个句子中下一个单词是什么，你最好知道之前的单词是什么。RNN之所以叫RNN就是它对一个序列中所有的元素都执行相同的任务，所有的输出都依赖于先前的计算。另一种思考RNN的方式是它会记住所有之前的计算的信息。
+
+#####应用
+在实际应用中，很多问题都可以通过深度学习解决。那么，我们举一些例子：
+
+- 黑白图像的着色
+
+深度学习可以用来根据对象及其情景来为图片上色，而且结果很像人类的着色结果。这种解决方案使用了很大的卷积神经网络和有监督的层来重新创造颜色。
+
+- 机器翻译
+
+深度学习可以对未经处理的语言序列进行翻译，它使得算法可以学习单词之间的依赖关系，并将其映射到一种新的语言中。大规模的LSTM的RNN网络可以用来做这种处理。
+
+- 图像中的对象分类与检测
+
+这种任务需要将图像分成之前我们所知道的某一种类别中。目前这类任务最好的结果是使用超大规模的卷积神经网络实现的。突破性的进展是Alex Krizhevsky等人在ImageNet比赛中使用的AlexNet模型。
+
+- 自动产生手写体
+
+这种任务是先给定一些手写的文字，然后尝试生成新的类似的手写的结果。首先是人用笔在纸上手写一些文字，然后根据写字的笔迹作为语料来训练模型，并最终学习产生新的内容。
+
+- 自动玩游戏
+
+这项任务是根据电脑屏幕的图像，来决定如何玩游戏。这种很难的任务是深度强化模型的研究领域，主要的突破是DeepMind团队的成果。
+
+- 聊天机器人
+
+一种基于sequence to sequence的模型来创造一个聊天机器人，用以回答某些问题。它是根据大量的实际的会话数据集产生的。
+#####参考文献
+[深度学习入门](https://www.zhihu.com/question/26006703/answer/126777449)
+[深度学习必须理解的25个概念](https://blog.csdn.net/pangjiuzala/article/details/72630166)
+[深度学习应用](https://zhuanlan.zhihu.com/p/25482889)
+[深度学习基本架构以及原理](http://m.elecfans.com/article/579639.html)
+####58.Matrices（矩阵）：
+by-wgw
+![58](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-58.jpg?raw=true)
+由 m × n 个数$a_{ij}$排成的m行n列的数表称为m行n列的矩阵，简称m × n矩阵。记作：
+$$
+        \begin{pmatrix}
+        a_{11} & a_{12} & \cdots & a_{1n} \\
+        a_{21} & a_{22} & \cdots & a_{2n} \\
+        a_{31} & a_{32} & \cdots & a_{3n} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        a_{m1} & a_{m2} & \cdots & a_{mn} \\
+        \end{pmatrix}
+$$
+这m×n 个数称为矩阵A的元素，简称为元，数$a_{ij}$位于矩阵A的第i行第j列，称为矩阵A的(i,j)元，以数$a_{ij}$为(i,j)元的矩阵可记为($a_{ij}$)或($a_{ij}$)m × n，m×n矩阵$A$也记作$A_{mn}$。元素是实数的矩阵称为实矩阵，元素是复数的矩阵称为复矩阵。而行数与列数都等于n的矩阵称为n阶矩阵或n阶方阵。
+
+####59.
+####60.
+####61. matthews correlation coefficient（马修斯相关系数）
+edit  by wqq
+- 马修斯相关系数（MCC）衡量二分类问题机器学习模型的重要指标，表示预测结果和观测结果间的相关性，其取值范围是-1~1，WCC越大，模型性能越好。
+    ![61_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-61.jpg?raw=true)
+
+- 其中：TP————将正类预测为正类数；FN————将错误预测为负类数；TN————将正类预测为负类数；FP————将错误预测为正类数；
+
+####62.
+####63.mean absolute error 绝对平均误差
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-63.jpg)
+
+公式：
+${\rm MAE}(y, \hat{y})=\frac{1}{n_{\rm samples}}\sum\limits_{i=1}^{n_{\rm samples}}|y_i-\hat{y}_i|$
+对同一物理量进行多次测量时，各次测量值及其绝对误差不会相同，我们将各次测量的绝对误差取绝对值后再求平均值，并称其为平均绝对误差
+####64.MSE（均方误差）：
+by-wgw
+![64](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-64.jpg?raw=true)
+MSE: Mean Squared Error
+均方误差是指参数估计值与参数真值之差平方的期望值;
+MSE可以评价数据的变化程度，MSE的值越小，说明预测模型描述实验数据具有越好的精确度。
+$$MSE=\frac{1}{N}\sum_{t=1}^{N}(observed_t-predict_t)^2$$
+####65.
+####66.
+####67. minimum of a loss function（损失函数的最小值）
+edit  by wqq
+- 对于一个非凸损失函数而言，损失函数可以多个极小值，而最小的那个值叫做最小值，也叫全局极小值，它是模型处于最佳的状态位置。非凸损失函数在深度学习模型中较为常见，为此，模型训练过程中通常会因为无法达到全局最优而训练失败。为了损失能达到全局收敛，需要尝试调整学习率来使损失下降。
+![67_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-67.jpg?raw=true)
+####68.
+####69.
+####70.Min Max Scaling
+by-wgw
+![70](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-70.jpg?raw=true)
+
+对房屋售价进行预测时，我们的特征仅有房屋面积一项，但是，在实际生活中，卧室数目也一定程度上影响了房屋售价。下面，我们有这样一组训练样本：
+房屋面积（英尺） | 卧室数量（间） | 售价（美元）
+- | :-: | -:
+2104 | 3 | 399900
+1600 | 3 | 329900
+2400 | 3 | 369000
+1416 | 2 | 232000
+3000 | 4 | 539900
+1985 | 4 | 299900
+.... | ... | ....
+
+
+注意到，房屋面积及卧室数量两个特征在数值上差异巨大，如果直接将该样本送入训练，则代价函数的轮廓会是“扁长的”，在找到最优解前，梯度下降的过程不仅是曲折的，也是非常耗时的：
+![70_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/70_1.png?raw=true)
+
+
+该问题的出现是因为我们没有同等程度的看待各个特征，即我们没有将各个特征量化到统一的区间。
+数据标准化（归一化）处理是数据挖掘的一项基础工作，不同评价指标往往具有不同的量纲和量纲单位，这样的情况会影响到数据分析的结果，为了消除指标之间的量纲影响，需要进行数据标准化处理，以解决数据指标之间的可比性。原始数据经过数据标准化处理后，各指标处于同一数量级，适合进行综合对比评价。以下是常用的归一化方法：
+
+Min-Max Scaling
+Min-Max Scaling又称为Min-Max normalization， 特征量化的公式为：
+$$z=\frac{x_i-min(x_i)}{max(x_i)-min(x_i)}$$
+量化后的特征将分布在区间[0,1]。
+大多数机器学习算法中，会选择Standardization来进行特征缩放，但是，Min-Max Scaling也并非会被弃置一地。在数字图像处理中，像素强度通常就会被量化到[0,1]区间，在一般的神经网络算法中，也会要求特征被量化[0，1]区间。
+进行了特征缩放以后，代价函数的轮廓会是“偏圆”的，梯度下降过程更加笔直，收敛更快性能因此也得到提升：
+![70_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/70_2.png?raw=true)
+
+
+
+参考资料：https://blog.csdn.net/leiting_imecas/article/details/54986045
+
+####71.
+####72.
+####73. MNAR（非随机缺失）
+edit  by wqq
+- 科学研究中，缺失值是个非常普遍的现象，毫不夸张的说，凡是涉及到数据收集的情景均存在缺失值现象。在社会科学研究中，调查对象在完成问卷过程中可能因各种原因（如，疏忽大意、回避敏感问题）造成数据缺失。数据缺失对于研究者来说是个头痛的问题，不仅损失了信息也增加了工作量。
+- Rubin (1976)最早将缺失值的机制分为三类：随机缺失(Missing At Random, MAR)，完全随机缺失(Missing Completely At Random, MCAR)和非随机缺失(Missing not at random, MNAR)。下面简要介绍三种机制的情况。
+    ![73_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-73.jpg?raw=true)
+- 随机缺失(MAR)：当某变量出现缺失值的可能性与模型中某些观测变量有关而与该变量自身无关时称作MAR。例如，在一次测试中，如果IQ达不到最低要求的100分，那么将不能参加随后的人格测验。在人格测验上因为IQ低于100分而产生的缺失值为MAR。
+- 完全随机缺失(MCAR)：当某变量缺失值发生的可能性与其他变量无关也与该变量自身无关时称作MCAR。换句话说，某变量缺失值的出现完全是个随机事件。可以将存在MCAR变量的数据看做是假定完整数据的一个随机样本。
+- 非随机缺失(MNAR)：当某变量出现缺失值的可能性只与自身相关时称作MNAR。非随机缺失也叫不可忽略缺失，不完全变量缺失的信息不能通过其他的特征获取。
+- 参考文献：http://blog.sina.com.cn/s/blog_7fb03f7d01012j6p.html
+
+####74.
+####75.model identifiability 模型可识别性
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-75.jpg)
+
+翻译：如果可以使用数据来查找单个最好的参数集，那么模型就是可识别的。
+
+为了识别，讨论一个参数θ（可以是矢量），其范围在参数空间$\Theta $以及由θ索引的分布族,我们通常会写${fθ|θ∈Θ}$
+
+例如,θ可能是θ=β和f可能是
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/75_1.jpg)
+这意味着$Θ = (0 ,∞ )$。为了使模型可以被识别，映射θ的变换到fθ应该是一对一的。给定一个模型，检查这个最直接的方法是从等式f开始$θ1= fθ2$，（这种平等应该适用于（几乎）所有x在支持中）并尝试使用代数（或其他参数）来表明，只有这样一个方程意味着，事实上，θ1= θ2。
+
+如果你通过这个计划获得成功，那么你的模型是可识别的;如果不是这样，那么你的模型不可识别，或者你需要找到另一个论点。无论如何，道理是一样的：在一个可识别的模型中，两个不同的参数（可能是向量）不可能产生相同的似然函数。
+
+就是说你待估计的参数能不能由现有方程解出来。一个解就是恰好识别，无解就是不可识别，无穷解就是过度识别。
+
+
+####76.Model selection
+by-wgw
+![76](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-76.jpg?raw=true)
+
+
+
+
+
+
+
+
+
+
+
+
+####77.
+####78.
+####79.
+####80.
+####81.
+####82.
+####83.
+####84.
+####85.
+####86.
+####87.normal distribution 正态分布
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-87.jpg)
+
+正态分布（Normal distribution），也称“常态分布”，又名高斯分布（Gaussian distribution），最早由A.棣莫弗在求二项分布的渐近公式中得到。
+
+正态曲线呈钟型，两头低，中间高，左右对称因其曲线呈钟形，因此人们又经常称之为钟形曲线。
+
+若随机变量X服从一个数学期望为μ、方差为σ^2 的正态分布，记为N(μ，σ^2 )。其概率密度函数为正态分布的期望值μ决定了其位置，其标准差σ决定了分布的幅度。当μ = 0,σ = 1时的正态分布是标准正态分布。
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/87-1.jpg)
+
+####88.Normalized Initialization of Neural Net Parameters
+![88](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-88.jpg?raw=true)
+####89.
+####90.
+####91.Notation 1（符号）:
+![91](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-91.jpg?raw=true)
+符号：
+﹁： “非”运算，如命题p，﹁p为其非命题。
+$∋$：使得，又记成“s.t”。
+$a \in b$： a属于b，a属于集合b，a是集合b的元素。
+$\therefore$ ：所以，用于逻辑书写等。
+####92.
+####93.
+####94.
+####95.
+####96.
+####97. occam's razor（奥卡姆剃刀）
+edit  by wqq
+- 奥卡姆（Ockham）提出的一个解决问题的法则，他在《箴言书注》2卷15题说“切勿浪费较多东西，去做‘用较少的东西，同样可以做好的事情’。”换一种说法，如果关于同一个问题有许多种理论，每一种都能作出同样准确的预言，那么应该挑选其中使用假定最少的。尽管越复杂的方法通常能做出越好的预测，但是在不考虑预测能力（即结果大致相同）的情况下，假设越少越好。
+    ![97_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-97.jpg?raw=true)
+####98.
+####99.odds 比值
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-99.jpg)
+
+
+ odds: 称为几率、比值、比数，是指某事件发生的可能性(概率)与不发生的可能性（概率）之比。用p表示事件发生的概率，则：odds = p/(1-p)。
+
+
+####100.One Hot encoding（独热编码）:
+
+&#8195;&#8195;问题由来：在很多機器學習任务中，特征并不总是连续值，而有可能是分类值。
+&#8195;&#8195;例如，考虑以下的三个特征：
+["male", "female"]
+["from Europe", "from US", "from Asia"]
+["male", "from US", v"uses Internet Explorer"] 表示为[0, 1, 3]
+["female", "from Asia", "uses Chrome"]表示为[1, 2, 1]
+&#8195;&#8195;但是，即使转化为数字表示后，上述数据也不能直接用在我们的分类器中。因为，分类器往往默认数据是连续的（可以计算距离），并且是有序的（而上面这个0并不是说比1要高级）。但是，按照我们上述的表示，数字并不是有序的，而是随机分配的。
+&#8195;&#8195;为了解决上述问题，其中一种可能的解决方法是采用独热编码（One-Hot Encoding）。独热编码即 One-Hot 编码，又称一位有效编码，其方法是使用N位状态寄存器来对N个状态进行编码，每个状态都由他独立的寄存器位，并且在任意时候，其中只有一位有效。
+&#8195;&#8195;例如：
+自然状态码为：000,001,010,011,100,101；
+独热编码为：000001,000010,000100,001000,010000,100000；
+&#8195;&#8195;可以这样理解，对于每一个特征，如果它有m个可能值，那么经过独热编码后，就变成了m个二元特征（如成绩这个特征有好，中，差变成one-hot就是100, 010, 001）。并且，这些特征互斥，每次只有一个激活。因此，数据会变成稀疏的。
+&#8195;&#8195; 这样做的好处主要有：
+&#8195;&#8195; 1.解决了分类器不好处理属性数据的问题。2.在一定程度上也起到了扩充特征的作用。
+举例：
+基于Scikit-learn的例子：
+```
+from sklearn import preprocessing
+enc = preprocessing.OneHotEncoder()
+enc.fit([[0, 0, 3], [1, 1, 0], [0, 2, 1], [1, 0, 2]])
+enc.transform([[0, 1, 3]]).toarray()
+```
+输出结果：
+```
+array([[ 1.,  0.,  0.,  1.,  0.,  0.,  0.,  0.,  1.]])
+```
+注意: fit了4个数据3个特征，而transform了1个数据3个特征。第一个特征两种值(0: 10, 1: 01)，第二个特征三种值(0: 100, 1: 010, 2: 001)，第三个特征四种值(0: 1000, 1: 0100, 2: 0010, 3: 0001)。所以转换[0, 1, 3]为[ 1.,  0.,  0.,  1.,  0.,  0.,  0.,  0.,  1.]。
+參考資料：https://blog.csdn.net/pipisorry/article/details/61193868
+
+####101.
+####102.
+####103. one-vs-rest logistic regression（OVR逻辑回归）
+edit  by wqq
+- OVR逻辑回归是逻辑回归在多分类问题的一种扩展，OVR逻辑回归的思想是，把多个类别中的一种一个作为正类，其他的类别都是负类。另一种多元逻辑回归的方法是Many-vs-Many(MvM)，它会选择一部分类别的样本和另一部分类别的样本来做逻辑回归二分类。最常用的是One-Vs-One（OvO）。OvO是MvM的特例。每次我们选择两类样本来做二元逻辑回归。
+![103_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-103.jpg?raw=true)
+- OVR逻辑回归的代码示例：
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+from sklearn.linear_model import LogisticRegression
+
+# make 3-class dataset for classification
+centers = [[-5, 0], [0, 1.5], [5, -1]]
+X, y = make_blobs(n_samples=1000, centers=centers, random_state=40)
+transformation = [[0.4, 0.2], [-0.4, 1.2]]
+X = np.dot(X, transformation)
+
+for multi_class in ('multinomial', 'ovr'):
+    clf = LogisticRegression(solver='sag', max_iter=100, random_state=42,
+                             multi_class=multi_class).fit(X, y)
+
+    # print the training scores
+    print("training score : %.3f (%s)" % (clf.score(X, y), multi_class))
+
+    # create a mesh to plot in
+    h = .02  # step size in the mesh
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                         np.arange(y_min, y_max, h))
+
+    # Plot the decision boundary. For that, we will assign a color to each
+    # point in the mesh [x_min, x_max]x[y_min, y_max].
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    # Put the result into a color plot
+    Z = Z.reshape(xx.shape)
+    plt.figure()
+    plt.contourf(xx, yy, Z, cmap=plt.cm.Paired)
+    plt.title("Decision surface of LogisticRegression (%s)" % multi_class)
+    plt.axis('tight')
+
+    # Plot also the training points
+    colors = "bry"
+    for i, color in zip(clf.classes_, colors):
+        idx = np.where(y == i)
+        plt.scatter(X[idx, 0], X[idx, 1], c=color, cmap=plt.cm.Paired,
+                    edgecolor='black', s=20)
+
+    # Plot the three one-against-all classifiers
+    xmin, xmax = plt.xlim()
+    ymin, ymax = plt.ylim()
+    coef = clf.coef_
+    intercept = clf.intercept_
+
+    def plot_hyperplane(c, color):
+        def line(x0):
+            return (-(x0 * coef[c, 0]) - intercept[c]) / coef[c, 1]
+        plt.plot([xmin, xmax], [line(xmin), line(xmax)],
+                 ls="--", color=color)
+
+    for i, color in zip(clf.classes_, colors):
+        plot_hyperplane(i, color)
+
+plt.show()
+```
+![103_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/103_2.png?raw=true)
+```python
+training score : 0.995 (multinomial)
+training score : 0.976 (ovr)
+```
+####104.
+####105.Out-Of-Bag  Error（袋外损失）:
+by-wgw
+![105](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-105.jpg?raw=true)
+&#8195;&#8195;Out-Of-Bag Error也称为OOB损失或者袋外损失。在随机森林模型中袋外损失起到了测试集测试的功能。袋外损失是泛化损失的无偏估计。在用Bootstrap方法构建随机森林时，会将数据集随机抽样出三分之二用于构建一棵决策树。剩余的三分之一可以起到测试集的作用，但是这里与测试集有所区别，一棵树的测试集可能是另一棵树的训练集。Breiman发现，用袋外数据得出的损失，是泛化的误差的无偏估计，也就是说，袋外损失可以起到表征泛化误差的功能。
+####106.Out-Of-Core（外存算法）：
+![106](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-106.jpg?raw=true)
+当数据集太大以至于不能完全存储与计算机的内存中，就要使用外存算法了。
+外存的选择：
+分块预处理数据
+分行读取或预处理数据
+渐进式学习
+随机性算法
+部分拟合学习方法
+
+####107.
+####108.Overfit vs Underfit（过拟合与欠拟合）:
+by-zcj
+![108](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-108.jpg?raw=true)
+&#8195;&#8195;过拟合：简单理解就是训练样本的得到的输出和期望输出基本一致，但是测试样本输出和测试样本的期望输出相差却很大。为了得到一致假设而使假设变得过度复杂称为过拟合。想像某种学习算法产生了一个过拟合的分类器，这个分类器能够百分之百的正确分类样本数据（即再拿样本中的文档来给它，它绝对不会分错），但也就为了能够对样本完全正确的分类，使得它的构造如此精细复杂，规则如此严格，以至于任何与样本数据稍有不同的文档它全都认为不属于这个类别！
+&#8195;&#8195;欠拟合：如果数据本身呈现二次型，故用一条二次曲线拟合会更好。但普通的PLS程序只提供线性方程供拟合之用。这就产生拟合不足即“欠拟合”现象，从而在预报时要造成偏差。如果我们用人工神经网络拟合，则因为三层人工神经网络拟合能力极强，有能力拟合任何函数。如果拟合彻底，就会连实验数据点分布不均匀，实验数据的误差等等“噪声”都按最小二乘判据拟合进数学模型。这当然也会造成预报的偏差。这就是“过拟合”的一个实例了。
+参考资料：https://blog.csdn.net/cindysuna/article/details/50057579
+
+####109. Overfiting（过拟合）
+- 过拟合是指模型不仅拟合了特征，还拟合了噪声，结果是模型在训练集上的表现很好，但在测试集上的表现反而下降；模型的复杂度变高。与之相对反的一个概念是欠拟合。
+![](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-109.jpg?raw=true)
+####110.
+####111.parameter sharing 参数共享
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-111.jpg)
+
+翻译：参数共享是当多个模型或部分模型共享参数时。例如，卷积神经网络在不同的部件之间共享参数。
+这允许CNN在图像的任何地方识别模式，并减少需要存储的参数数量。
+
+简单从共享的角度来说：权重共享即filter的值共享
+
+- input是一维的情况，输入W = 5，padding = 1
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/111-3.jpg)
+
+    此时的filter是 1 0 -1 最右上角图，即F = 3。左边stride=1，右边stride = 2。整个滤波（卷积）的过程中filter从input最左端滑到最右端，值一直保持不变更明显的一张图
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/111-2.jpg)
+由固定的红色、紫色、绿色三种值组成。前一层（白色圆）总是通过相同的filter值得到上一层
+
+- input是三维的情况，
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/111-1.jpg)
+此时，每个filter需要F*F*D1个权重值，总共K个filter，需要F*F*D1*K权重值。和一维一样，整个滑动过程中filter W0和W1值保持不变，可称作权值共享。而且，补充一句，对于三维的input，权值只是在input的每个depth slice上共享的
+
+#####参考文献：
+[链接：https://www.zhihu.com/question/47158818/answer/128939450]()
+
+####112.调整R平方
+by-wgw
+![112](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-112.jpg?raw=true)
+我们先看看什么是R方：
+$$R^2=1-\frac{RSS}{TSS}$$
+其中RSS是残差，$RSS=\sum(y_i-\hat{y})^2$是模型的残差。$TSS=\sum(y_i-\overline{y})^2$是模型的总方差。RSS/TSS 可以认为是模型难以解释的部分，$R^2=1-\frac{RSS}{TSS}$则可以认为是模型可以解释的部分，也就是模型的可靠度，显然R方越大，模型也越被认为是可靠的。
+但是，在其他变量不变的情况下，引入新的变量，总能提高模型的R方。但是在机器学习中，直觉告诉我们：当全部的正确的特征都被加入后，再引入新的特征，应该对新的特征进行惩罚。于是就有了调整R方，或者说修正R方：
+$$R^2=1-\frac{RSS/(n-d-1)}{TSS/(n-1)}$$
+其中n是观察的数量，d是特征的数量，这样，当特征增多，R方有降低的压力，也即是有了惩罚措施。使得算法可以剔除不必须的特征，这也是符合“奥卡姆剃刀”原理的。
+
+
+####113.Bias（偏差）:
+by-wgw
+![113](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-113.jpg?raw=true)
+偏差，是模型与真实值之间的期望误差。$$ Bias[\hat{f}(x)]=E[\hat{f}(x)-f(x)]$$其中$\hat{f}(x)$是模型的预测值。$f(x)$是真实值。预测值与真实值的期望误差，就是偏差。
+####114.
+####115. Parametric model（参数模型）
+edit  by wqq
+- 用代数方程、微分方程、微分方程组以及传递函数等描述的模型都是**参数模型**。建立参数模型就在于确定已知模型结构中的各个参数。通过理论分析总是得出参数模型。**非参数模型**是直接或间接地从实际系统的实验分析中得到的响应，例如通过实验记录到的系统脉冲响应或阶跃响应就是非参数模型。运用各种系统辨识的方法，可由非参数模型得到参数模型。如果实验前可以决定系统的结构，则通过实验辨识可以直接得到参数模型。（https://blog.csdn.net/zb1165048017/article/details/51532511）
+![](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-115.jpg?raw=true)
+
+####116.Partial Derivative（偏导数）：
+-by zcj
+![116](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-116.jpg?raw=true)
+
+&#8195;&#8195;在数学中，一个多变量的函数的偏导数，就是保持其他变量恒定下关于其中一个变量的导数而（相对于全导数，在其中所有变量都允许变化）。偏导数在向量分析和微分几何中用途广泛。
+
+1.引入
+&#8195;&#8195;在一元函数中，导数就是函数的变化率。对于二元函数研究它的“变化率”，由于自变量多了一个，情况就要复杂的多。在 xOy 平面内，当动点由$P(x_0,y_0)$沿不同方向变化时，函数 f(x,y) 的变化快慢一般说来是不同的，因此就需要研究 f(x,y) 在$P(x_0,y_0)$点处沿不同方向的变化率。
+在这里我们只学习函数 f(x,y) 沿着平行于 x 轴和平行于 y 轴两个特殊方位变动时， f(x,y) 的变化率。
+偏导数的表示符号为:∂。
+偏导数反映的是函数沿坐标轴正方向的变化率。
+2.定义
+&#8195;&#8195;x方向的偏导：设有二元函数 z=f(x,y) ，点$(x_0,y_0)$是其定义域D内一点。把y固定在$y_0$而让x在$x_0$ 有增量$\Delta_x$ ，相应地函数 z=f(x,y) 有增量（称为对 x 的偏增量）
+$$\Delta_z=f(x_0+\Delta_x,y_0)-f(x_0,y_0)$$
+&#8195;&#8195;如果$\Delta_z$与$\Delta_x$之比当 $\Delta_x\to0$ 时的极限存在，那么此极限值称为函数 z=f(x,y)在$(x_0,y_0)$处对 x 的偏导数，记作 $f^\prime_ x(x_0,y_0)$。函数 z=f(x,y)在$(x_0,y_0)$处对x的偏导数，实际上就是把y固定在$y_0$看成常数后，一元函数$z=f(x,y_0)$在$x_0$处的导数。
+&#8195;&#8195;y方向的偏导：同样，把x固定在$x_0$，让y有增量$\Delta_y$，如果极限存在那么此极限称为函数 z=(x,y) 在 $(x_0,y_0)$处对y的偏导数。记作
+$f^\prime_y(x0,y0)$。
+3.求法
+&#8195;&#8195;当函数 z=f(x,y) 在$(x_0,y_0)$的两个偏导数$ f^\prime_x(x_0,y_0)$与$ f^\prime_y(x_0,y_0)$都存在时，我们称 f(x,y) 在$(x_0,y_0)$处可导。如果函数 f(x,y) 在域D的每一点均可导，那么称函数 f(x,y) 在域D可导。此时，对应于域 D 的每一点 (x,y) ，必有一个对 x (对 y )的偏导数，因而在域 D 确定了一个新的二元函数，称为 f(x,y) 对 x (对 y )的偏导函数。简称偏导数。按偏导数的定义，将多元函数关于一个自变量求偏导数时，就将其余的自变量看成常数，此时他的求导方法与一元函数导数的求法是一样的。
+4.几何意义
+&#8195;&#8195;表示固定面上一点的切线斜率。偏导数$ f^\prime_x(x_0,y_0)$表示固定面上一点对 x 轴的切线斜率；偏导数$ f^\prime_y(x_0,y_0)$表示固定面上一点对 y 轴的切线斜率。
+高阶偏导数：如果二元函数 z=f(x,y) 的偏导数$ f^\prime_x(x_0,y_0)$与$ f^\prime_y(x_0,y_0)$ 仍然可导，那么这两个偏导函数的偏导数称为 z=f(x,y) 的二阶偏导数。二元函数的二阶偏导数有四个：$f^{\prime\prime}_{xx},f^{\prime\prime}_{xy},f^{\prime\prime}_{yx},f^{\prime\prime}_{yy}$。
+&#8195;&#8195;注意：$f^{\prime\prime}_{xy}$ 与 $f^{\prime\prime}_{yx}$的区别在于：前者是先对 x 求偏导，然后将所得的偏导函数再对 y 求偏导；后者是先对 y 求偏导再对 x 求偏导。当$f^{\prime\prime}_{xy}$ 与 $f^{\prime\prime}_{yx}$都连续时，求导的结果与先后次序无关。
+
+补充：
+如何理解导数的概念 ? https://www.zhihu.com/question/28684811
+参考资料：
+https://baike.baidu.com/item/%E5%81%8F%E5%AF%BC%E6%95%B0/5536984?fr=aladdin
+####117. correlation 相关系数
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-117.jpg)
+
+公式定义为： 两个连续变量(X,Y)的pearson相关性系数(Px,y)等于它们之间的协方差cov(X,Y)除以它们各自标准差的乘积(σX,σY)。系数的取值总是在-1.0到1.0之间，接近0的变量被成为无相关性，接近1或者-1被称为具有强相关性。
+
+皮尔森相关系数是衡量线性关联性的程度，p的一个几何解释是其代表两个变量的取值根据均值集中后构成的向量之间夹角的余弦。
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/117-1.png)
+
+####118.
+
+####119.perceptron（感知机）：
+by-zcj
+![119](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-119.jpg?raw=true)
+&#8195;&#8195;在机器学习中，感知机（Perceptron）是二分类的线性分类模型，属于监督学习算法。输入为实例的特征向量，输出为实例的类别（取+1和-1）。感知机对应于输入空间中将实例划分为两类的分离超平面。感知机旨在求出该超平面，为求得超平面导入了基于误分类的损失函数，利用梯度下降法对损失函数进行最优化。感知机的学习算法具有简单而易于实现的优点，分为原始形式和对偶形式。感知机预测是用学习得到的感知机模型对新的实例进行预测的，因此属于判别模型。感知机由Rosenblatt于1957年提出的，是神经网络和支持向量机的基础。
+定义：假设输入空间(特征向量)为$X \subseteq R_n$，输出空间为Y={-1, +1}。输入$ x\in X$表示实例的特征向量，对应于输入空间的点；输出y∈Y表示示例的类别。由输入空间到输出空间的函数为$f(x)=sign(w·x+b)$称为感知机。其中，参数w为权值向量weight，b称为偏置bias。w·x表示w和x的点积。sign为符号函数，即
+$$ \sum_{i=1}^{m}w_ix_i=w_1x_1+w_2x_2+···+w_n x_n$$
+一种线性分类模型，属于判别模型。我们需要做的就是找到一个最佳的满足w⋅x+b=0的w和b值，即分离超平面（separating hyperplane）。
+学习策略
+核心：极小化损失函数。如果训练集是可分的，感知机的学习目的是求得一个能将训练集正实例点和负实例点完全分开的分离超平面。为了找到这样一个平面（或超平面），即确定感知机模型参数w和b，我们采用的是损失函数，同时将损失函数极小化。对于损失函数的选择，我们采用的是误分类点到超平面的距离（可以自己推算一下，这里采用的是几何间距，就是点到直线的距离）：
+$$ \frac{1}{||w||}|w·x_0+b |$$
+其中||w||是L2范数。
+对于误分类点$(x_i,y_i)$来说：$$-y_i(w·x_i+b)>0$$
+误分类点到超平面的距离为：$$ -\frac{1}{||w||}y_i(w·x_0+b)$$
+那么，所有点到超平面的总距离为：$$ -\frac{1}{||w||}\sum_{x_i \in M}y_i(w·x_0+b)$$
+不考虑$\frac{1}{ ||w|| }$，就得到感知机的损失函数：$$L(w,b)= -\sum_{x_i \in M}y_i(w·x_0+b)$$
+其中M为误分类的集合。这个损失函数就是感知机学习的经验风险函数。可以看出，损失函数L(w,b)是非负的。如果没有误分类点，则损失函数的值为0，而且误分类点越少，误分类点距超平面的距离之和就越小，损失函数值就越小。同时，损失函数L(w,b)是连续可导函数。
+
+学习算法：
+感知机学习转变成求解损失函数L(w,b)的最优化问题。最优化的方法是随机梯度下降法（stochastic gradient descent），这里采用的就是该方法。说明一下，梯度下降其实是局部最优。感知机学习算法本身是误分类驱动的，因此我们采用随机梯度下降法。首先，任选一个超平面w0和b0，然后使用梯度下降法不断地极小化目标函数。极小化过程不是一次使M中所有误分类点的梯度下降，而是一次随机的选取一个误分类点使其梯度下降。
+参考资料：https://blog.csdn.net/dream_angel_z/article/details/48915561
+
+####120.
+
+####121. polynomial regression（多项式回归）
+- 多项式回归是曲线拟合的一种方式，拟合的特征变量是x的各次幂。其回归方程如下图所。
+![](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-121.jpg?raw=true)
+
+####122.
+####123. precision 精确率
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-123.jpg)
+
+翻译：精确率是分类器不把真正的负面观察标记为正面的能力
+
+精确率是针对我们预测结果而言的，它表示的是预测为正的样本中有多少是真正的正样本。那么预测为正就有两种可能了，一种就是把正类预测为正类(TP)，另一种就是把负类预测为正类(FP)，也就是
+
+![123](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/123-1.jpg)
+
+####124.大O符号
+edit by wgw
+![124](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-124.jpg?raw=true)
+大O符号代表数学上的趋近。这个符号有两种形式上很接近但迥然不同的使用方法：无穷大渐近与无穷小渐近。然而这个区别只是在运用中的而不是原则上的——除了对函数自变量的一些不同的限定，“大O”的形式定义在两种情况下都是相同的。
+无穷大渐近:
+大O符号在分析算法效率的时候非常有用。举个例子，解决一个规模为 n 的问题所花费的时间（或者所需步骤的数目）可以被求得：$T(n) = 4n^2 - 2n + 2$。
+当 n 增大时，$n^2$项将开始占主导地位，而其他各项可以被忽略——举例说明：当 n = 500，$4n^2$项是 2n 项的1000倍大，因此在大多数场合下，省略后者对表达式的值的影响将是可以忽略不计的。
+进一步看，如果我们与任一其他级的表达式比较，$n^2$项的系数也是无关紧要的。例如一个包含$n^3$或$n^2$项的表达式，即使$T(n) = 1,000,000n^2$假定$U(n) = n^3$一旦 n 增长到大于1,000,000，后者就会一直超越前者$(T(1,000,000) = 1,000,000^3 = U(1,000,000))$。
+这样，大O符号就记下剩余的部分，写作：
+$T(n)∈O(n^2)$
+并且我们就说该算法具有 2阶的时间复杂度。
+无穷小渐近:
+大O也可以用来描述数学函数估计中的误差项。例如：
+$e^x=1+x+x^2/2+O(x^3)$当 x→0 时
+这表示，如果 x 足够接近于0，那么误差$e^x-(1+x+x^2/2)$的绝对值小于 $x^3$的某一常数倍。
+
+常用的符号和阶：
+|符号|阶|
+|---|---|
+|O(1)|常数|
+|O(log*n)|迭代对数|
+|O(log n)|对数|
+|O[$(log n)^c$]|多对数|
+|O(n)|线性，次线性|
+|O(n log n)|线性对数，或对数线性、拟线性、超线性|
+|O($n^2$)|平方|
+|O($n^c$),Integer(c>1)|多项式，有时叫作“代数”（阶）|
+|O($c^n$)|指数，有时叫作“几何”（阶）|
+|O(n!)|阶乘，有时叫做“组合”（阶）|
+####125.
+####126.
+####127. principal components（主成分分析）
+edit  by wqq
+- 在多元统计分析中，主成分分析（PCA）是一种分析、简化数据集的技术，由卡尔·皮尔逊于1901年发明。主成分分析经常用于减少数据集的维数，同时保持数据集中的对方差贡献最大的特征。这是通过保留低阶主成分，忽略高阶主成分做到的。这样低阶成分往往能够保留住数据的最重要方面。但是，这也不是一定的，要视具体应用而定。由于主成分分析依赖所给数据，所以数据的准确性对分析结果影响很大。
+![127_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-127.jpg?raw=true)
+- 我们先看看最简单的情况，也就是n=2，n'=1,也就是将数据从二维降维到一维。数据如下图。我们希望找到某一个维度方向，它可以代表这两个维度的数据。图中列了两个向量方向，$u_1$和$u_2$，那么哪个向量可以更好的代表原始数据集呢？从直观上也可以看出，$u_1$比$u_2$好。为什么$u_1$比$u_2$好呢？可以有两种解释，第一种解释是样本点到这个直线的距离足够近，第二种解释是样本点在这个直线上的投影能尽可能的分开。
+<img src='https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/127_2.jpg?raw=true' width=400>
+- PCA的一般步骤为：
+    - 输入：n维样本集$D=(x^{(1)},x^{(2)},...,x^{(m)})$，要降维到的维数n'.
+    - 输出：降维后的样本集D′
+    - 1）对所有的样本进行中心化：$$x^{(i)}=x^{(i)}-\frac{1}{m}∑_{j=1}^mx^{(j)}$$
+    - 2）计算样本的协方差矩阵$XX^T$
+    - 3）对矩阵$XX^T$进行特征值分解
+    - 4）取出最大的n'个特征值对应的特征向量$(w_1,w_2,...,w_{n'})$, 将所有的特征向量标准化后，组成特征向量矩阵$W$。
+    - 5）对样本集中的每一个样本x(i)x(i),转化为新的样本$z^{(i)}=W^Tx^{(i)}$
+    - 6）得到输出样本集$D'=(z^{(1)},z^{(2)},...,z^{(m)})$
+    - 有时候，我们不指定降维后的n'的值，而是换种方式，指定一个降维到的主成分比重阈值t。这个阈值t在(0,1]之间。假如我们的n个特征值为$λ_1≥λ_2≥...≥λ_n$,则n'可以通过下式得到:
+    $$\frac{∑_{i=1}^{n'}λ_i}{∑_{i=1}^nλ_i} ≥t$$
+
+####128.
+####129.PMF 概率质量函数
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-129.jpg)
+
+在概率论中，概率质量函数 (Probability Mass Function，PMF)是离散随机变量在各特定取值上的概率。
+
+概率质量函数和概率密度函数不同之处在于：概率密度函数是对连续随机变量定义的，本身不是概率，只有对连续随机变量的取值进行积分后才是概率。
+
+假设有一元随机变量。
+
+- 如果是连续型随机变量，那么可以定义它的概率密度函数（probability density function, PDF），![](https://www.zhihu.com/equation?tex=f_X%28x%29)有时简称为密度函数。
+![](https://www.zhihu.com/equation?tex=%5CPr%5Cleft%28a+%5Cleq++X+%5Cleq+b%5Cright%29+%3D%5Cint_%7Ba%7D%5E%7Bb%7D+f_X%28x%29+dx)
+
+    我们用PDF在某一区间上的积分来刻画随机变量落在这个区间中的概率，即：
+![](https://www.zhihu.com/equation?tex=%5CPr%5Cleft%28a+%5Cleq++X+%5Cleq+b%5Cright%29+%3D%5Cint_%7Ba%7D%5E%7Bb%7D+f_X%28x%29+dx)
+
+- 如果是离散型随机变量，那么可以定义它的概率质量函数（probability mass function, PMF）![](https://www.zhihu.com/equation?tex=f_X%28x%29)。
+
+    与连续型随机变量不同，这里的PMF其实就是高中所学的离散型随机变量的分布律，即
+![](https://www.zhihu.com/equation?tex=f_X%28x%29%3D%5CPr%5Cleft%28+X%3Dx+%5Cright%29+)
+
+    比如对于掷一枚均匀硬币，如果正面令，如果反面令，那么它的PMF就是
+![](https://www.zhihu.com/equation?tex=f_X%5Cleft%28+x+%5Cright%29+%3D%5Cbegin%7Bcases%7D%0A+%26%5Cfrac%7B1%7D%7B2%7D+%5Ctext%7B+if+%7D+x%5Cin%5Cleft+%5C%7B+0%2C1+%5Cright+%5C%7D+%5C%5C+%0A+%26+0%5Ctext%7B+if+%7D+x%5Cnotin%5Cleft+%5C%7B+0%2C1+%5Cright+%5C%7D%0A%5Cend%7Bcases%7D)
+
+
+#####参考文献
+[https://www.zhihu.com/question/36853661/answer/69775009]()
+
+####130.
+####131.
+####132.
+####133. random variable（随机变量）
+edit  by wqq
+- 随机变量是样本观测结果的函数，用数学的语言来描述就是：对任意实数$x$，${X(w)\leq x}\in F$的实值函数为随机变量。其中$w$表示事件，$X(w)$表示实值函数（即随机变量），$F$是样本空间。
+![133_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-133.jpg?raw=true)
+####134.
+####135.Boosting
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-135.jpg)
+
+翻译：一种集成学习策略，训练一系列弱模型，每个模型都试图正确地预测先前模型错误的观测结果
+
+提升算法(Boosting)是常用的有效的统计学习算法，属于迭代算法，它通过不断地使用一个弱学习器弥补前一个弱学习器的“不足”的过程，来串行地构造一个较强的学习器，这个强学习器能够使目标函数值足够小。从优化的角度分析，与一般的在参数空间搜索最优解的学习算法（如神经网络）类似，
+
+Boosting也是一个迭代搜索，且最优的算法，不同的是，它的搜索空间是学习器空间，或说函数空间（Function space），它的搜索方向是构造不断完善的强学习器，以达到目标函数（或说误差函数）足够小的目的。
+#####基本思想
+基本思想：
+1) 先赋予每个训练样本相同的概率。
+2) 然后进行T次迭代，每次迭代后，对分类错误的样本加大权重(重采样)，使得在下一次的迭代中更加关注这些样本。
+![](http://blog.chinaunix.net/attachment/201203/12/8695538_1331555368jWSr.jpg)
+示例：
+![](http://blog.chinaunix.net/attachment/201203/12/8695538_1331555414I2if.jpg)
+#####主要过程
+
+为说明Boosting的主要过程，下面举一个简化的例子。
+
+假设训练数据集为(x1,y1),(x2,y2),...,(xn,yn)，我们的任务是寻找使这个回归问题的均方误差最小的模型F(x)。
+
+如果已经有一个初始的模型f,且f(x1)=0.8，但y1=0.9，f(x2)=1.4，但y2=1.3… 显然f是不完美的，我们可以采用不断完善f的方式,如不断在f的基础上增加模型（如决策树）h，即：f(x)←f(x)+h(x),使f趋于F.
+
+我们希望：
+ ![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/135-1.jpg)
+即
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/135-2.jpg)
+然而恰好满足上式的h
+可能不存在，但我们总可以找到使残差yi−f(xi)变小的h.
+
+上述过程等价于拟合如下数据集：
+
+(x1,y1−f(x1)),(x2,y2−f(x2)),...,(xn,yn−f(xn))
+
+上述一次叠加h的过程就是Boosting的一次迭代。要使f
+足够接近F，一般需要多次迭代。
+#####参考文献
+[boosting原理](https://blog.csdn.net/laiqun_ai/article/details/46761391)
+
+####136.Recall（召回率）：
+edit by wgw
+![136](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-136.jpg?raw=true)
+召回率：
+Recall直译为回忆率，一开始是表示搜索引擎能够回忆起多少跟关键词相关的内容，那也就是搜索到的内容中跟关键词相关的内容占全部内容的比例。机器学习中的召回率也是如此，一个分类器分类为正的数据占全部为正的数据的比例，表征的是分类器将将正的数据挑出来的能力。如果我们想要找到所有正的样本，我们可以最大化召回率这个指标。
+
+
+
+####137.
+####138.
+####139. regularization（正则）
+edit  by wqq
+- 正则是防止过拟合的最常用的手段之一，它是模型中可学习参数的函数，常用的正则方法有权重衰减、丢失、L2正则和L1正则等。
+![139_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-139.jpg?raw=true)
+####140.
+by-zzx
+![140](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-140.jpg?raw=true)
+激活函数：
+  Activation Function，将“激活的神经元的特征”通过函数把特征保留并映射出来，是神经网络中能解决非线性问题的关键。使用线性方程，即使拓展到多层的神经网络，只是生成更复杂的线性方程，仍是线性分类。使用激励函数，再经历神经网络的叠加后，输出非线性函数，增强了神经网络的表达能力。
+
+常见的激励函数有tanh,sigmoid,ReLU等。
+  tanh　　   双切正切函数，取值范围[-1,1]
+  sigmoid　 采用S形函数，取值范围[0,1]
+  ReLU         大于0的留下，其他一律为0
+ReLU:
+  Rectified Linear Unit，线性整流函数，通常指斜坡函数，即
+    f(x) = max(0,x)
+优点：
+  使用 ReLU得到的SGD的收敛速度会比 sigmoid/tanh 快。这是因为它是linear，而且ReLU只需要一个阈值就可以得到激活值，不用去计算复杂的运算。
+  缺点：
+  训练过程该函数不适应较大梯度输入，因为在参数更新以后，ReLU的神经元不会再有激活的功能，导致梯度永远都是零。
+拓展:
+Leaky ReLUs
+    f(x) = αx (x<0)
+         = x  (x≥0)
+  α 是一个很小的常数，这样既修正了数据分布，又保留了一些负轴的值，使得负轴信息不会全部丢失。
+Parametric ReLU
+    f(x) = max(0,x)+α×min(0,x)
+  α是可学习参数。为固定的非零较小数时，它等价于LeakyReLU；当它为0时，PReLU等价于ReLU。
+Randomized ReLU
+  Randomized Leaky ReLU 是 Leaky ReLU 的随机版本。在训练过程中，α是从一个高斯分布U(l,u)中随机出来的，然后再测试过程中进行修正。
+
+  如下是一次ReLU层的参数
+     message ReLUParameter {
+     optional float negative_slope = 1 [default = 0]; //如之前分析的，默认值0即为ReLU，非零则为LeakyReLU
+    enum Engine {
+      DEFAULT = 0;
+      CAFFE = 1;
+      CUDNN = 2;
+    }
+    optional Engine engine = 2 [default = DEFAULT]; //运算引擎选择，一般选择默认
+    }
+
+####141.RSS 剩余平方和
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-141.jpg)
+
+翻译：对错误进行平方将更严重地惩罚一些较大的错误，即使错误的总和是相同的
+
+- 它表明除x对y的线性变化之外的一切因素(包括x对y的非线性影响及测量误差等)对y的离差的影响。
+- 残差平方和是用连续曲线近似地刻画或比拟平面上离散点组，以表示坐标之间函数关系的一种数据处理方法。用解析表达式逼近离散数据的一种方法。
+- 为了明确解释变量和随机误差各产生的效应是多少，统计学上把数据点与它在回归直线上相应位置的差异称为残差，把每个残差平方之后加起来 称为残差平方和，它表示随机误差的效应。
+- 每一点y的估计值与实际值之差的平方之和称为残差平方和,而y的实际值和平均值的差的平方之和称为总平方和；简单来说,一组数据的残差平方和越小,其拟合程度越好。
+
+#####参考文献
+[rss](https://zhidao.baidu.com/question/506219148.html)
+####142.Ridge Regression（岭回归）:
+by-wgw
+![142](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-142.jpg?raw=true)
+&#8195;&#8195;岭回归，是对最小二乘法，也就是一般线性回归的优化，通过增加惩罚项，虽然损失了一点精确性，但是模型的稳定性更好，泛化能力更好了。
+普通的线性回归会遇到一些问题，主要表现在：
+假设样本的数量是n，特征的数量是p，
+当n>>p时，最小二乘回归会有较小的方差，
+当n～p时，容易产生过拟合，
+当n<p时，最小二乘回归得不到有意义的结果。
+岭回归就是在平方误差的基础上增加L2正则项：
+$$ RSS+\lambda\sum_{j=1}^{p}\hat{B}_j^2$$
+其中$\lambda$是调节参数，通过确定的值可以使得在方差和偏差之间达到平衡：随着$\lambda$的增大，模型方差减小而偏差增大。
+
+####143.
+####144.
+####145. saturation of the loss function（损失函数的饱和）
+edit  by wqq
+- 损失函数的饱和是指损失函数的输出对输入极不敏感，在高饱和的情况下，损失函数的梯度很小，学习过程无效。
+![145_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-145.jpg?raw=true)
+- 这个原因请参考第147个概念。
+####146.
+####147. saturation 饱和
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-147.jpg)
+
+翻译：当一个函数的输出对输入非常不敏感的时候，即饱和。例如：sigmoid
+
+当sigmoid和tanh等激活函数值接近其边界值（对sigmoid就是0或者1）的时候，会导致算法在反向传播时梯度消失。
+
+例如在反向传播中，梯度将会与整个损失函数关于该门单元输出的梯度相乘，因此，如果局部梯度非常小，那么相乘的结果也会趋近于零，这就会有效的杀死梯度，几乎就没有梯度信号通过神经元传到权重再到数据了。
+![](https://pic3.zhimg.com/80/677187e96671a4cac9c95352743b3806_hd.jpg)
+
+就是指梯度接近于0（例如sigmoid函数的值接近于0或1时，函数曲线平缓，梯度接近于0）的状态，这会导致采用梯度下降法求最值时，速度偏缓。
+
+#####参考文献：
+[深度学习中saturation是什么意思](https://www.zhihu.com/question/48010350/answer/109446932)
+
+####148.Scalars（标量）：
+edit by wgw
+![148](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-148.jpg?raw=true)
+标量：标量指的就是一个单纯的数字。比如4，4.02。通常是用一个小写字母的变量表示的，数字上的概念。
+####149.
+####150.
+####151. sigmoid activate function（sigmoid激活函数）
+edit  by wqq
+- 激活函数是相当于神经网络输出控制的阀门，能起到输出信息调节的作用以及模型的非线性化等。
+![151_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-151.jpg?raw=true)
+- sigmoid函数的解释请参考第55个知识点
+####152.
+####153. Simpson‘s paradox 辛普森悖论
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-153.jpg)
+
+翻译
+当在群体分离时，出现了一种趋势，但当群体合并时，就会出现另一种趋势。
+
+#####简介
+
+辛普森悖论是一种统计现象，实验群体由具有不同统计特性的子群体组成，观察到的现象是总体水平可能与单个子群体的水平不相关。换句话说，辛普森悖论是在一个数据集中的变量被分组之后，他们之间的相关性可能会发生改变。
+
+辛普森悖论在数据集方面看上去广泛，而且没有被分解成有意义的片段。辛普森悖论是研究中被忽略的“混淆变量”结果。混淆变量本质上是一个与核心研究无关的变量，它随着自变量的改变而改变。
+
+为了避免辛普森悖论的出现，就需要斟酌各分组的权重，并乘以一定的系数去消除以分组数据基数差异而造成的影响。同时必需了解清楚情况，是否存在潜在因素，综合考虑。
+
+#####经典实例
+
+(以下内容取材自维基百科与科普写作奖佳作奖作者林守德的向理性与直觉挑战的顽皮精灵-综观诡谲的悖论等文)
+
+“校长，不好了，有很多男生在校门口抗议，他们说今年研究所女生录取率42%是男生21%的两倍，我们学校遴选学生有性别歧视”，校长满脸疑惑的问秘书：“我不是特别交代，今年要尽量提升男生录取率以免落人口实吗？”
+
+秘书赶紧回答说：“确实有交代下去，我刚刚也查过，的确是有注意到，今年商学院录取率是男性75%，女性只有49%；而法学院录取率是男性10%，女性为5%。二个学院都是男生录取率比较高，校长这是我作的调查报告。”
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/153_1.jpg)
+
+“秘书，你知道为什么个别录取率男皆大于女，但是总体录取率男却远小于女吗？”
+此例这就是统计上著名的辛普森悖论(Simpson's Paradox)
+
+上面例子说明，简单的将分组资料相加汇总，是不一定能反映真实情况的。就上述例子录取率与性别来说，导致辛普森悖论有两个前提。
+
+(1) 两个分组的录取率相差很大，就是说法学院录取率9.2%很低，而商学院53.3%却很高，另一方面，两种性别的申请者分布比重却相反，女生偏爱申请商学院，故商学院女生申请比率占83.3%，相反男生偏爱申请法学院，因此法学院女生申请比率只占0.833%。结果在数量上来说，录取率低的法学院，因为女生申请为数少，所以不录取的女生相对很少。而录取率很高的商学院虽然录取了很多男生，但是申请者却不多。使得最后汇总的时候，女生在数量上反而占优势。
+
+(2) 性别并非是录取率高低的唯一因素，甚至可能是毫无影响的，至于在法商学院中出现的比率差可能是属于随机事件，又或者是其他因素作用，譬如学生入学成绩却刚好出现这种录取比例，使人牵强地误认为这是由性别差异而造成的。
+
+#####解决方法
+
+数据分析中为了避免辛普森悖论出现，就需要斟酌个别分组的权重，以一定的系数去消除以分组资料基数差异所造成的影响，同时必需了解该情境是否存在其他潜在要因而综合考虑。
+
+#####参考文献
+[辛普森悖论](https://baike.baidu.com/item/辛普森悖论/4475862?fr=aladdin)
+####154.Slack Variable （松弛变量）：
+edit by wgw
+![154](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-154.jpg?raw=true)
+
+
+
+
+####155.
+
+####156.Softmax Normalization:
+by-zcj
+![](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-156.jpg?raw=true)
+&#8195;&#8195;Softmax函数的本质就是将一个K 维的任意实数向量压缩（映射）成另一个K维的实数向量，其中向量中的每个元素取值都介于（0，1）之间。
+$$\sigma:R^k \rightarrow (0,1)^K$$
+$$\sigma(z)_j=\frac{e^{z_j}}{\sum_{k=1}^{K}e^{z_k}} for j=1,...,K.$$
+![156_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/156_1.jpeg?raw=true)
+
+&#8195;&#8195;举例：如果我们输入[1，2，3，4，1，2，3]，那么softmax是[0.024，0.064，0.175，0.475，0.024，0.064，0.175]。输出的大部分重量都是原始输入中的'4'。这是该功能通常用于：突出显示最大值并抑制显着低于最大值的值。但是请注意：softmax不是尺度不变的，所以如果输入[0.1,0.2,0.3,0.4,0.1,0.2,0.3]（其总和为1.6），softmax将是[0.125,0.138,0.1513,0.169,0.125， 0.138，0.153]。这表明，对于0到1之间的值，softmax事实上不重视最大值（注意，0.169不仅小于0.475，它也小于初始值0.4）。
+&#8195;&#8195;Softmax标准化是一种减少数据中极端值或异常值的影响的方法，无需从数据集中移除它们。给出离群数据非常有用，我们希望将其包含在数据集中，同时仍将数据的重要性保留在均值的标准差内。
+参考资料：
+https://en.wikipedia.org/wiki/Softmax_function#Softmax_normalization
+https://blog.csdn.net/u014422406/article/details/52805924
+https://www.zhihu.com/question/23765351
+####157.Brier Score（布莱尔分数）:
+by-wgw
+![157](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-157.jpg?raw=true)
+&#8195;&#8195;布莱尔分数，是观测值的预测概率与实际结果直接的差的平方的平均值。
+$$BS=\frac{1}{n}\sum_{t=1}^{n}(P_t-O_t)^2$$
+其中$P_t$是预测概率，$O_t$是实际输出。
+布莱尔分数在0到1之间。平方保证了结果为正值，布莱尔分数越低说明模型的预测效果越好。
+####158.
+####159.sources of uncertainty 不确定性的来源
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-159.jpg)
+翻译:
+1. 宇宙固有的随机性，例如：量子力学
+2. 不能完全观察现象，即使它是确定性的，例如：观察犯罪
+3. 无法完美地模拟一种现象，例如：预测犯罪的模型是简单化的。
+
+概率论是用于表示不确定性声明的数学框架。它不仅提供了量化不确定性的方法，也提供了用于导出新的不确定性的方法。计算机科学的许多分支处理的实体大部分都是完全确定。然而机器学习中经常要处理随机量，所以经常要用到概率论的知识。
+
+不确定性有三种可能的来源：
+
+1. 被建模系统内在的随机性。
+例如，大多数量子力学的解释，都将亚原子粒子的动力学描述为概率的。我们还可以创建一些我们假设具有随机动态的理论情境，例如一个假想的纸牌游戏，在这个游戏中我们假设纸牌被真正混洗成了随机顺序。
+
+2. 不完全观测。
+即使是确定的系统，当我们不能观测到所有驱动系统行为的变量时，该系统也会呈现随机性。例如，在Monty Hall问题中，一个游戏节目的参与者被要求在三个门之间选择，并且会赢得放置在选中门后的奖品。其中两扇门通向山羊，第三扇门通向一辆汽车。选手的每个选择所导致的结果是确定的，但是站在选手的角度，结果是不确定的。
+
+3. 不完全建模。
+当我们使用一些必须舍弃某些观测信息的模型时，舍弃的信息会导致模型的预测出现不确定性。例如，假设我们制作了一个机器人，它可以准确地观察周围每一个对象的位置。在对这些对象将来的位置进行预测时，如果机器人采用的是离散化的空间，那么离散化的方法将使得机器人无法确定对象们的精确位置：因为每个对象都可能处于它被观测到的离散单元的任何一个角落。
+
+概率可以被看作是用于处理不确定性的逻辑扩展。逻辑提供了一套形式化的规则，可以在给定某些命题是真或假的假设下，判断另外一些命题是真的还是假的。概率论提供了一套形式化的规则，可以在给定一些命题的真假后，计算其他命题的真假。
+#####参考文献：
+[不确定性的来源](http://blog.sina.com.cn/s/blog_182ec9dc30102ybjw.html)
+
+####160.Span
+![160](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-160.jpg?raw=true)
+Span是一组向量的线性组合所能组合出的所有向量的顶点的集合，也就是向量空间。比如两个不共线的向量的Span就是向量所在的平面。
+####161.
+####162.
+####163. standard deviation（标准差）
+edit  by wqq
+- 标准差是方差的开2次根，是数据离散程度的度量，数据分布越分散，那么其标准差越大。
+![163_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-163.jpg?raw=true)
+- 标准差可以分成总体标准差和样本标准差，两者的计算公式如上图所示。顾名思义，总体标准差$\sigma$就是随机变量总体的标准差，而样本标准差$s$就是根据样本数据计算的标准差，两者在计算上的区别是均值是否已知以及自由度的差异，对于样本标准差而言，均值需要通过需要通过样本数据来估计。
+####164.
+####165.standardization 标准化
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-165.jpg)
+
+翻译
+标准化是一种常见的扩展方法。Xi'表示每个值离均值的标准差数，它将特征值重新设为0的均值和单位方差
+
+数据的标准化是将数据按比例缩放，使之落入一个小的特定区间。由于信用指标体系的各个指标度量单位是不同的，为了能够将指标参与评价计算，需要对指标进行规范化处理，通过函数变换将其数值映射到某个数值区间。
+
+在机器学习中，我们可以处理各种类型的数据，例如音频信号和图像数据的像素值，这些数据可以包含多个维度。特征标准化使得数据中每个特征的值具有零均值（当减去分子中的均值时）和单位方差。这种方法被广泛用于许多机器学习算法（例如支持向量机，逻辑回归和人工神经网络）中的归一化。
+
+一般的计算方法是确定分布均值和标准差为每个功能。接下来我们从每个特征中减去平均值。然后我们将每个特征的值（均值已经减去）除以其标准偏差。
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/165_1.jpg)
+
+X 是原始的特征向量，$\overline{x}$是该特征向量的平均值，并且$\delta $是它的标准偏差。
+#####参考文献：
+[标准化数据](https://en.wikipedia.org/wiki/Feature_scaling)
+
+####166.Stationary points（驻点）：
+![166](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-166.jpg?raw=true)
+如上图所示，驻点就是一个函数曲线上导数为零的点。
+####167.
+####168.
+####169. stochastic gradient descent（随机梯度下降）
+edit  by wqq
+- 梯度下降法是一个一阶最优化算法，通常也称为最速下降法。 要使用梯度下降法找到一个函数的局部极小值，必须向函数上当前点对应梯度（或者是近似梯度）的反方向的规定步长距离点进行迭代搜索。如果相反地向梯度正方向迭代进行搜索，则会接近函数的局部极大值点；这个过程则被称为梯度上升法。
+![169_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-169.jpg?raw=true)
+- 使用随机梯度下降时，参数更新的表达式是：$$w'=w-\eta \Delta Loss$$其中$w'$是权重参数$w$更新后的结果，$\eta$是学习率，而$\Delta Loss$是损失函数的梯度。
+<img src='https://upload.wikimedia.org/wikipedia/commons/7/79/Gradient_descent.png' width=300>
+####170.
+####171. strategies for highly imbalanced classes 高度不平衡类的策略
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-171.jpg)
+
+1. 收集更多的数据
+2. 选择适合于不平衡类(如精度或撤销)的损失函数
+3. 增大权重
+4. 下采样和上采样
+
+#####不平衡数据
+
+什么是不平衡数据呢？顾名思义即我们的数据集样本类别极不均衡，以二分类问题为例，假设我们的数据集是$S$，数据集中的多数类为$S_maj$，少数类为$S_min$，通常情况下把多数类样本的比例为$100:1$,$1000:1$，甚至是$10000:1$这种情况下为不平衡数据，不平衡数据的学习即需要在如此分布不均匀的数据集中学习到有用的信息。
+
+#####为什么要不平衡学习
+
+传统的学习方法以降低总体分类精度为目标，将所有样本一视同仁，同等对待，如下图1所示，造成了分类器在多数类的分类精度较高而在少数类的分类精度很低。机器学习模型都有一个待优化的损失函数，以我们最常用最简单的二元分类器逻辑回归为例，其损失函数如下公式1所示，逻辑回归以优化总体的精度为目标，不同类别的误分类情况产生的误差是相同的，考虑一个$500:1$的数据集，即使把所有样本都预测为多数类其精度也能达到$500/501$之高，很显然这并不是一个很好的学习效果，因此传统的学习算法在不平衡数据集中具有较大的局限性。
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/171_1.png)
+
+#####不平衡学习的方法
+
+既然传统的学习算法在不平衡数据中具有较大的局限性，那么针对不平衡数据集又有怎样的解决方案呢？解决方法主要分为两个方面，第一种方案主要从数据的角度出发，主要方法为抽样，既然我们的样本是不平衡的，那么可以通过某种策略进行抽样，从而让我们的数据相对均衡一些；第二种方案从算法的角度出发，考虑不同误分类情况代价的差异性对算法进行优化，使得我们的算法在不平衡数据下也能有较好的效果。
+
+1. 收集更多的少数类数据
+
+2. 设计适用于不平衡数据集的模型
+大部分方法都集中在数据上，并将模型保持为固定的组件。但事实上，如果设计的模型适用于不平衡数据，则不需要重新采样数据，著名的XGBoost已经是一个很好的起点，因此设计一个适用于不平衡数据集的模型也是很有意义的。
+通过设计一个代价函数来惩罚稀有类别的错误分类而不是分类丰富类别，可以设计出许多自然泛化为稀有类别的模型。例如，调整SVM以惩罚稀有类别的错误分类。
+![](https://static.leiphone.com/uploads/new/article/740_740/201706/59410724276fb.png?imageMogr2/format/jpg/quality/90)
+
+3. 加权
+除了采样和生成新数据等方法，我们还可以通过加权的方式来解决数据不平衡问题，即对不同类别分错的代价不同，如下图：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/171_2.jpg)
+横向是真实分类情况，纵向是预测分类情况，C(i,j)是把真实类别为j的样本预测为i时的损失，我们需要根据实际情况来设定它的值。
+这种方法的难点在于设置合理的权重，实际应用中一般让各个分类间的加权损失值近似相等。当然这并不是通用法则，还是需要具体问题具体分析。
+
+4. 上采样和下采样
+采样分为上采样（Oversampling）和下采样（Undersampling），上采样是把小众类复制多份，下采样是从大众类中剔除一些样本，或者说只从大众类中选取部分样本。
+
+    随机采样最大的优点是简单，但缺点也很明显。上采样后的数据集中会反复出现一些样本，训练出来的模型会有一定的过拟合；而下采样的缺点显而易见，那就是最终的训练集丢失了数据，模型只学到了总体模式的一部分。
+
+    上采样会把小众样本复制多份，一个点会在高维空间中反复出现，这会导致一个问题，那就是运气好就能分对很多点，否则分错很多点。为了解决这一问题，可以在每次生成新数据点时加入轻微的随机扰动，经验表明这种做法非常有效。
+
+    因为下采样会丢失信息，如何减少信息的损失呢？
+  - 第一种方法叫做EasyEnsemble，利用模型融合的方法（Ensemble）：多次下采样（放回采样，这样产生的训练集才相互独立）产生多个不同的训练集，进而训练多个不同的分类器，通过组合多个分类器的结果得到最终的结果
+  - 第二种方法叫做BalanceCascade，利用增量训练的思想（Boosting）：先通过一次下采样产生训练集，训练一个分类器，对于那些分类正确的大众样本不放回，然后对这个更小的大众样本下采样产生训练集，训练第二个分类器，以此类推，最终组合所有分类器的结果得到最终结果。第三种方法是利用KNN试图挑选那些最具代表性的大众样本，叫做NearMiss，这类方法计算量很大。
+
+#####参考文献
+[机器学习中的数据不平衡解决方案大全](链接：https://www.jianshu.com/p/3e8b9f2764c8)
+[不平衡数据下的机器学习方法简介](https://www.jianshu.com/p/3e8b9f2764c8)
+####172.$AdjustedR^2$ ( 调整$R^2$ ) :
+-by zcj
+![172](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-112.jpg?raw=true)
+&#8195;&#8195;当因变数Y 与自变数 X 之间的关系可以用一个回归方程式来解释时，X的解释能力有必要进一步地了解。该解释能力的程度大小，即回归分析的配合度(goodness of  fit)，是以决定系数(R2)来描述。如图一所示，总变异$(Y-\overline{Y})$是由两个成分组成：配合值离平均值之变异$(\hat{Y}-\overline{Y})$，以及观测值离配合值之变异$(Y-\hat{Y})$。前者$(\hat{Y}-\overline{Y})$是由所建立回归式之X 所引起，而后者$(Y-\hat{Y})$则为逢机机差所引起。由建立回归式之 X 所引起之平方和占总变异平方和的比例，称为决定系数即$R^2=\frac{\sum(\hat{Y}-\overline{Y})^2}{\sum(Y-\hat{Y})^2}=\frac{SSR}{SST}$ ；有些教科书则将$R^2$翻译为判定系数。$R^2$的所在范围在0与1之间，其结果的大小表示Y的变异中X所能解释的程度。当$R^2$值越接近1时，表示估计式中大部份Y之变异是由X影响而来，也代表利用X来解释Y的能力越强，因此所建立的回归模式为合适可接受。
+![172_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/172_1.jpeg?raw=true)
+&#8195;当自变数不只一项时，例如同时探讨氮、磷、钾多种肥料对作物产量的影响关系，或气温、日照、雨量等各种气象因素对产量的综合影响，一组自变数$X_1,X_2,X_3,…$与因变数Y之间的直线关系，可以利用复回归方程式(multiple regression function)来表示：$\hat{Y}=b_0+b_1X_1+b_2X_2+b_3X_3+····$。但并非所有生物现象都是呈直线关系，当肥料用量增加时，作物产量可能会以一缓慢的速度增加，以致于该曲线会逐渐平稳而接近水平；当过度施肥时，甚至对作物造成毒害而使曲线下降。因此有时候，非直线回归方程式的探讨，是有其必要性的。对同一套试验资料而言，到底应该适合于何种特定形式的回归方程式，常常也是我们探讨的重点。而此时，$R^2$是用来作为判断回归方程式是否有效的一个重要指标。也就是说，回归系数是看个别自变数与因变数间的净关系，而决定系数则是看全部自变数与因变数间的综合关系。
+&#8195;&#8195;修正的公式是:
+$$R^{2}_{adj}=\frac{(n-1)(1-R^2)}{n-p-1}$$
+&#8195;&#8195;其中n是样本数量，p是模型中变量的个数。
+&#8195;&#8195;我们知道在其他变量不变的情况下，引入新的变量，总能提高模型的$R^2$。$R^2_{adj}$就是相当于给变量的个数加惩罚项。换句话说，如果两个模型，样本数一样，$R^2$一样，那么从$R^2_{adj}$的角度看，使用变量个数少的那个模型更优。
+
+参考资料：
+http://ilc.hk.edu.tw/c/document_library/get_file?p_l_id=260741&folderId=261080&name=DLFE-3350.pdf
+http://sofasofa.io/forum_main_post.php?postid=1000702
+
+####173.
+
+####174.Supervised vs Unsupervised（有监督和无监督）:
+![174](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-174.jpg?raw=true)
+&#8195;&#8195;机器学习的类型有两种：有监督学习和无监督学习。
+&#8195;&#8195;有监督学习：在有监督学习中，我们有一些训练数据。使用这些训练数据，我们创建了一个预测模型，可用于未来预测结果。最终目标是建立一个称为假设函数的预测函数f(x)。 “学习”使用数学算法对该函数进行优化，以便给定输入数据x关于某个域，它将能够预测一些有趣的值f(x)。例如，房子的市场价格。属于此类别的一些算法是回归、分类、KNN、决策树、朴素湾、支持向量机等。
+&#8195;&#8195;示例：假设你提供了装满不同水果的篮子，你的任务是对它们进行分组。假设这些水果是苹果、香蕉、西瓜、橙子。既然你熟悉水果，你可以很容易地将它们分成苹果、香蕉、西瓜、橙子等各种类别。这项活动被称为训练数据。现在，如果您获得不同类似的水果，您将在未来使用此学习体验。这种类型的算法被称为分类。
+&#8195;&#8195;无监督学习：与有监督学习不同，在无监督情况下，我们拥有带有输入x的训练数据集，但没有任何目标值或我们可以预测的内容。此信息缺失。这种学习的目标是在数据集内找出一组类似的例子。这种算法被称为聚类。依上例，现在让我们说，如果你再次提供了装满水果的桶，但这次你不知道那些水果。你以前从未见过他们。然后你将使用身体特征将他们放在不同的组中。比方说颜色，大小等，这称为聚类。因此，无监督学习任务涉及识别数据内的关系。这里没有提供培训示例。比如用K-means聚类算法。
+参考资料：https://www.linkedin.com/pulse/machine-learning-supervised-vs-unsupervised-amit-sinha
+####175. SVC（支持向量机）
+edit  by wqq
+- 支持向量机是一种分类算法，其学习策略是使间隔最大化，位于最大间隔上的数据点叫做支持向量，支持向量机是求解凸二次规划的最优化算法。
+![175_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-175.jpg?raw=true)
+- ##### <font color='f47920'>SVM模型的分类(按训练数据划分)：
+    - 线性可分SVM：当训练数据线性可分，也叫做硬间隔SVM。
+    - 线性SVM：当训练数据近似线性可分，也叫软间隔SVM。
+    - 非线性SVM：当训练数据线性不可分，可以使用核技巧及软间隔最大化。
+- spark-python版本的SVM示例：
+```python
+from pyspark import SparkConf, SparkContext
+sc = SparkContext('local')
+
+from pyspark.mllib.classification import SVMWithSGD, SVMModel
+from pyspark.mllib.regression import LabeledPoint
+
+import matplotlib.pyplot as plt
+
+# Load and parse the data 加载和解析数据，将每一个数转化为浮点数。每一行第一个数作为标记，后面的作为特征
+
+
+def parsePoint(line):
+    values = []
+    for x in line.split():
+        values.append(float(x))
+    return LabeledPoint(values[0], values[1:])
+
+
+data = sc.textFile("pydata.txt")
+print ('===========================输出第一行数据===========================')
+print (data.collect()[0])
+
+parsedData = data.map(parsePoint)
+
+print ('========================输出解析后的第一行数据=======================')
+print (parsedData.collect()[0])
+# Build the model 建立模型
+model = SVMWithSGD.train(parsedData, iterations=10)
+
+# Evaluating the model on training data 评估模型在训练集上的误差
+labelsAndPreds = parsedData.map(lambda p: (p.label, model.predict(p.features)))
+trainErr = labelsAndPreds.filter(
+    lambda lp: lp[0] != lp[1]).count() / float(parsedData.count())
+print("Training Error {}".format(trainErr))
+
+
+# Save and load model 保存模型和加载模型
+model.save(sc, "SVMWithSGDModel")
+sameModel = SVMModel.load(sc, "SVMWithSGDModel")
+
+print ('=======================输出第0行的分类预测==========================')
+print (sameModel.predict(parsedData.collect()[0].features))
+```
+- 数据格式：
+![175_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/175_2.jpg?raw=true)
+- 执行结果：
+![175_3](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/175_3.jpg?raw=true)
+###176.
+####177.
+####178.
+![178](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-178.jpg?raw=true)
+####179.
+####180.
+####181. tanh（双曲正切）
+edit  by wqq
+- 双曲正切函图像和sigmoid函数图像有点像，但双曲正切函数是奇函数。其函数方程为：$$tanh(x)=\frac{sinh(x)}{cosh(x)}=\frac{e^x-e^{-x}}{e^x+e^{-x}}$$取值范围是(-1,1）。
+![181_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-181.jpg?raw=true)
+- 同sigmoid函数，relu函数一样，tanh函数也是深度学习领域中常用的激活函数。
+####182.
+####183.tests、training、validation sets 测试、训练、验证集
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-183.jpg)
+
+翻译：
+训练集：这部分数据被用来寻找最小化损失函数的合适的权重
+验证集：用于调优学习算法的超参数的数据
+测试集：用于评价模型普遍性的数据
+####184.
+![184](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-184.jpg?raw=true)
+
+TF-IDF(Term Frequency-Inverse Document Frequency, 词频-逆文件频率).
+是一种用于资讯检索与资讯探勘的常用加权技术。TF-IDF是一种统计方法，用以评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在语料库中出现的频率成反比下降。也就是说一个词语在一篇文章中出现次数越多, 同时在所有文档中出现次数越少, 越能够代表该文章.这也就是TF-IDF的含义.
+词频 (term frequency, TF) 指的是某一个给定的词语在该文件中出现的次数。这个数字通常会被归一化(一般是词频除以文章总词数), 以防止它偏向长的文件。（同一个词语在长文件里可能会比短文件有更高的词频，而不管该词语重要与否。）
+但是, 需要注意, 一些通用的词语对于主题并没有太大的作用, 反倒是一些出现频率较少的词才能够表达文章的主题, 所以单纯使用是TF不合适的。权重的设计必须满足：一个词预测主题的能力越强，权重越大，反之，权重越小。所有统计的文章中，一些词只是在其中很少几篇文章中出现，那么这样的词对文章的主题的作用很大，这些词的权重应该设计的较大。IDF就是在完成这样的工作.
+$$ TF_w = \frac{\text{在某一类中词条w出现的次数}} {\text{该类中所有的词条数目}} $$
+逆向文件频率 (inverse document frequency, IDF) IDF的主要思想是：如果包含词条t的文档越少, IDF越大，则说明词条具有很好的类别区分能力。某一特定词语的IDF，可以由总文件数目除以包含该词语之文件的数目，再将得到的商取对数得到。
+$$IDF=log(\frac{\text{语料库的文档总数}}{\text{语料库的文档总数包含词条w的文档数+1}})$$
+分母之所以要加1，是为了避免分母为0.
+某一特定文件内的高词语频率，以及该词语在整个文件集合中的低文件频率，可以产生出高权重的TF-IDF。因此，TF-IDF倾向于过滤掉常见的词语，保留重要的词语。
+$$TF-IDF=TF*IDF$$
+
+
+例子：以《中国的蜜蜂养殖》为例，假定该文长度为1000个词，"中国"、"蜜蜂"、"养殖"各出现20次，则这三个词的"词频"（TF）都为0.02。然后，搜索Google发现，包含"的"字的网页共有250亿张，假定这就是中文网页总数。包含"中国"的网页共有62.3亿张，包含"蜜蜂"的网页为0.484亿张，包含"养殖"的网页为0.973亿张。则它们的逆文档频率（IDF）和TF-IDF如下：
+
+![184_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/184_1.png?raw=true)
+
+
+
+
+参考资料：https://blog.csdn.net/zrc199021/article/details/53728499
+####185.
+
+####186.Tht Effect Of Feature Scaling On Gradient Descent:
+by-wgw
+![186](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-186.jpg?raw=true)
+&#8195;&#8195;特征缩放在梯度下降中的效果，在梯度下降算法中，存在这样一个问题，当不同的特征的范围差距过大时，模型的预测会变得困难很多，代价函数的轮廓图会非常的偏斜，下降最快的方向与全局下降最快的方向往往不一致，直观图如下所示：
+![186_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/186_1.jpeg?raw=true)
+
+经过特征缩放之后，代价函数的轮廓图就会变的相对标准，下降最快的方向与全局下降最快的方向几乎一致：
+![186_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/186_2.jpeg?raw=true)
+特征缩放的一个最简答的方法就是将特征映射到0-1之间：
+$$x^{,}=\frac{x-x_{min}}{x_{max}-x_{min}}$$
+将每一个特征都代入就可以实现特征的一致化，也就是特征的缩放。
+
+####187. model complexity（模型复杂度）
+edit  by wqq
+- 衡量模型复杂度的一个指标是模型中的特征变量的个数以及其参数的大小，模型复杂度的高低不等于模型优劣程度，如下图：
+![187_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-187.jpg?raw=true)
+    图中横坐标表示模型复杂度，纵坐标表示预测误差，可以看出模型复杂度越高，训练误差会越小，但测试误差则先变小后变大。
+- 从上图可见，模型复杂度的高低会影响模型的泛化能力，为此，需要合理控制模型复杂度，控制模型复杂度的合理办法通常是正则化。
+
+
+####188.The Random In Random Forest（随机森林中的随机）:
+by-wgw
+![188](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-188.jpg?raw=true)
+随机森林中的随机,体现在：
+1，每一棵决策树的训练集都是在总训练集中有放回的随机抽样出的的随机样本，称为袋内数据，每一棵树的袋外数据作为这棵树的测试集。
+2，每一棵树都拿到所有的特征，但是每一个节点只有这些特征的一部分子集是可用的。
+
+####189.
+####190.Categorical Feature（类别特征）：
+![190](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-190.jpg?raw=true)
+类别特征：特征有两种，一种是有序的特征，比如学习科目成绩的高低、年龄的大小……等。另一种是无序的，比如性别，水果，城市的种类。对于有序的特征，本身的数值即可作为机器处理的对象。对于无序的特征，若要转化为机器可以直接处理的对象，需要数字化，但是这里的数字化不是简单的为无序特征赋值。
+无序特征的数字化：对于无序特征，例如对于性别男，性别女，分别赋值1，2。那么，1小于2是否意味着男小于女？显然不是的。但是机器会认为1是小于2的，这会干扰到机器学习的效果。所以对于无序特征的数字化，应避免数字化后，使得本来无序的特征有了顺序。
+一个可行的方法是对无序特征赋于向量值。例如对性别为男赋值$[0,1]$.对性别为女赋值$[1,0]$。若有更多的类别，可类似的赋值$[0,0,0,1]$，$[0,0,1,0]$等。
+
+####191.
+####192.
+####193. tokenizing text（标注文本）
+edit  by wqq
+- 切分为段落，句子或单词的文本，或者是其他人为标注的文本，都叫做标注文本。
+![193_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-193.jpg?raw=true)
+- 例如：
+    ```法新社/j 报道/v 说/v ，/w [泰国/nsf 政府/nis]/nt 已经/d 作/v 好/a 签发/v 紧急状态/n 令/v的/ude1 准备/vn 。/w （/w 老/a 任/v ）/w```
+####194.
+####195. TSS total sum of squares 完全平方和
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-195.jpg)
+
+在统计数据分析中，总平方和（TSS或SST）是作为呈现这些分析结果的标准方式的一部分出现的量。它被定义为所有观测数据中每个观测值与总平均值的平方差的总和。
+
+
+![](https://wikimedia.org/api/rest_v1/media/math/render/svg/24f49fd012d7208436fc502fdb1f0065605951e6)
+
+ $\overline{y}$是平均值。
+
+####196.Training And Test Error(训练和测试的误差)
+![196](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-196.jpg?raw=true)
+训练误差表征了一个模型在训练数据上表现的怎么样。测试误差表征表征一个模型在应用到新数据的表现怎么样，也是泛化误差。
+
+
+####197.
+####198.
+####199.
+####200.
+####201. chain rule of calculus 链式法则的微积分
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-201.jpg)
+
+翻译：用于有效地计算反向传播中的梯度。如果$y=g(x)$，$z=f(g(x))$，则$f(y)$:
+$\frac{dz}{dx}=\frac{dz}{dy}\cdot \frac{dy}{dx}$
+反向传播通常在张量上使用链式法则，但概念本质上是相同的
+
+链式法则是微积分中的求导法则，用于求一个复合函数的导数，是在微积分的求导运算中一种常用的方法。复合函数的导数将是构成复合这有限个函数在相应点的 导数的乘积，就像锁链一样一环套一环，故称链式法则。
+
+####202.Underflow（下溢出）：
+edit by wgw
+
+![202](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-202.jpg?raw=true)
+在数字计算机上执行连续数学的基本困难在于，我们需要用有限的(bit)位数来表示无限的实数。这就意味着，当我们在计算机中去表示这些实数时，几乎所有的实数都会发生近似误差。大多数情况，这些是取整误差(rounding error)。取整误差是一个大问题，特别如果不进行累计误差最小化，当它要经常很多操作时，会导致算法理论可行但实际应用失败。
+一种毁灭性的rounding error就是下溢(underflow)。当数字接近0被取整为0时，underflow就发生了。许多函数的参数为0时与参数是接近0的正数时，表现是非常不同的。比如，我们经常要避免去除以0。
+
+参考资料：https://blog.csdn.net/u012631977/article/details/77863151
+####203.
+####204.
+####205. upsample（上采样）
+edit  by wqq
+- 当面对正负类别样本不均衡时，比如正类样本远远大于弗雷样本，这是有两种采样方式能解决这个问题，一种是对正类样本下采样，即只使用部分样本；另一种是对负类样本上采样，即重复使用部分负样本，如果总样本较少时，采用下采样将进一减少样本量，这是通过上采样，即随机选取部分负样本加入到原来的负样本中，以增加样本总量，将是更好的选择。
+![205_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-205.jpg?raw=true)
+- 在图像处理领域，上采样是常用的提高图像清晰度的方法。
+####206.
+####207.vanishing gradient problem 梯度问题消失
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-207.jpg)
+
+翻译：当损失函数相对于网络早期层的参数的梯度很小时。导致学习缓慢，而且由于许多梯度是微小的，它们对学习没有多大贡献，并可能导致糟糕的表现
+#####问题引入
+随着隐藏层数目的增加，分类准确率反而下降了。为什么？
+先看一组试验数据，当神经网络在训练过程中, 随epoch增加时各隐藏层的学习率变化。
+两个隐藏层：[784,30,30,10]
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/207_1.png)
+
+三个隐藏层：[784,30,30,30,10]
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/207_2.png)
+四个隐藏层：[784,30,30,30,30,10]
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/207_3.png)
+
+可以看到：前面的隐藏层的学习速度要低于后面的隐藏层。
+
+这种现象普遍存在于神经网络之中， 叫做消失的梯度问题（vanishing gradient problem）。
+
+另外一种情况是内层的梯度被外层大很多，叫做激增的梯度问题（exploding gradient problem）。
+
+更加一般地说，在深度神经网络中的梯度是不稳定的，在前面的层中或会消失，或会激增。这种不稳定性才是深度神经网络中基于梯度学习的根本问题。
+#####产生消失的梯度问题的原因
+
+先看一个极简单的深度神经网络：每一层都只有一个单一的神经元。如下图：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/207_4.jpeg)
+代价函数C对偏置b1的偏导数的结果计算如下：
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/207_5.jpeg)
+先看一下sigmoid 函数导数的图像：
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/207_6.jpeg)
+
+该导数在σ′(0) = 1/4时达到最高。现在，如果我们使用标准方法来初始化网络中的权重，那么会使用一个均值为0 标准差为1 的高斯分布。因此所有的权重通常会满足|wj|<1。从而有wjσ′(zj) < 1/4。
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/207_7.jpeg)
+这其实就是消失的梯度出现的本质原因了。
+
+可以考虑将权重初始化大一点的值，但这可能又会造成激增的梯度问题。
+
+根本的问题其实并非是消失的梯度问题或者激增的梯度问题，而是在前面的层上的梯度是来自后面的层上项的乘积。所以神经网络非常不稳定。唯一可能的情况是以上的连续乘积刚好平衡大约等于1，但是这种几率非常小。
+
+所以只要是sigmoid函数的神经网络都会造成梯度更新的时候极其不稳定，产生梯度消失或者激增问题。
+#####解决梯度消失问题
+使用ReLU。
+使用ReL 函数时：gradient = 0 (if x < 0), gradient = 1 (x > 0)。不会产生梯度消失问题。
+
+#####参考文献
+[梯度消失问题](https://www.cnblogs.com/tsiangleo/p/6151560.html)
+####208.
+####209.
+####210.
+####211. vectors（向量）
+edit  by wqq
+- 向量（也称为欧几里得向量、几何向量、矢量），指具有大小（magnitude）和方向的量。它可以形象化地表示为带箭头的线段。箭头所指：代表向量的方向；线段长度：代表向量的大小。
+![211_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-211.jpg?raw=true)
+- 上图左上角分别是行向量和列向量。
+
+####212.（特征选择中的卡方应用）：
+by-wgw
+![212](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-212.jpg?raw=true)
+&#8195;&#8195;在数据预处理的过程中，重要的一步是特征选择，也就是选择出与模型和算法最相互适应的特征。特征选择的方法有好几种，卡方检验是其中一种，卡方检验的做法是对特征与目标进行关联给出卡方值，卡方值从小到大排序，越靠前的特征效果越好。卡方检验由英国统计学家Pearson在1900年提出。
+通用的卡方检验步骤：
+1）假设命题$H_0$和$H_1$，$H_0$命题表示不符合假设的分布，$H_1$命题表示符合假设的分布。
+2）计算卡方值，根据以下公式：$$\chi^2=\sum_1^n\frac{(O_i-E_i)}{E_i}$$对于两列数据，$O_i$表示实际值，$E_i$表示理论值，所谓理论值即是按照特定分布应取的期望值。$n-1$为自由度。
+3）查卡方检验表：
+![212_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/212_1.jpeg?raw=true)
+
+4）计算出的$\chi^2$值如果小于查出的值，则拒绝$H_0$接受$H_1$，否则拒绝$H_1$接受$H_0$
+####213.Visualizing RSS 可视化Rss
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-213.jpg)
+####214.Weak Learners(弱分类器)：
+edit by wgw
+![214](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-214.jpg?raw=true)
+弱分类器是一个仅仅比随机分类强一点点的分类器。
+经常应用于Boosting模型，Boosting模型也即是提升模型，就是把一系列弱分类器组合成一个请分类器。
+浅层决策树，也叫stumps，就普遍被用作弱分类器。
+
+
+
+
+
+####215.
+####216.
+####217. when n=population（当n等于总数时）
+edit  by wqq
+- 即便是海量数据数据也不能代总体，因为观测到的所有结果中“遗漏了”没有观测到的结果，但已观测的事件和未观测的事件通常是相关的，所以我们需要也可以用一些统计手段来评估预测的可信赖水平。
+![217_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-217.jpg?raw=true)
+
+####218.Why Is It Called A Cost Function（成本函数）:
+by-wgw
+![218](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-218.jpg?raw=true)
+&#8195;&#8195;成本函数，是用一个模型代替真实世界的“成本”。这里借用了经济学里面的成本概念。成本函数可以认为是模型值与真实值之间的差异的度量。成本函数是我们要尽量最小化的。之所以叫做成本函数，是因为用模型代替世界产生的差异的确就像是我们要承担的成本一样。
+
+####219. word 2 vec
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-219.jpg)
+
+翻译：使用一个浅的神经网络将单词映射到一个向量空间，在这个空间中，具有类似上下文的单词有紧密的向量。
+
+#####从需求入门
+
+给你一个川普的词，你会联想到哪些？正常的话，应该是美国、大选、希拉里、奥巴马；也就是相似词语的选取了。对于相识词的选取，算法非常的多。也有许多人用了很简单的办法就能求得两样东西的相似性，比如购物车里物品的相似度，最简单的办法就是看看同时买了这样东西的用户还同时买了什么，用简单的数据结构就很容易实现这样的一个算法。这种算法很简单也很方便，但就是这种简单而使他忽略了很多的问题。例如时间顺序，下面会有提到。
+
+还是回归到相识度的问题。归结到数学问题上，最经常用的是把每个词都归结到一个坐标系下，再用距离公式（如：皮尔逊公式）可方便的求出各个词语之间的相识度。
+
+这也是word2vec的方法，word2vec 通过训练，可以把对文本内容的处理简化为 K 维向量空间中的向量运算，而向量空间上的相似度可以用来表示文本语义上的相似度。
+如图，下面是有五维向量空间的单词：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/219_1.png)
+
+算法的关键步骤就是如何求出词语的向量空间。
+
+#####word2vec算法介绍
+
+word2vec是2013年Google中开源的一款工具。2013年神经网络的各种算法都已经相当的成熟了，word2vec核心是神经网络的方法，采用 CBOW（Continuous Bag-Of-Words，即连续的词袋模型）和 Skip-Gram 两种模型，将词语映像到同一坐标系，得出数值向量的高效工具。
+
+一般来说算法采用神经网络的话，要注意他的输入和输出。因为使用神经网络进行训练需要有输入和输出，输入通过神经网络后，通过和输入对比，进行神经网络的重新调整，达到训练网络的目的。抓住输入输出就能够很好的理解神经网络的算法过程。
+
+语言模型采用神经网络，就要判断什么东西要作为输入，什么东西要作为输出。这是算法可以创新的地方，语言模型有许多种，大部分的原理也是采用根据上下文，来推测这个词的概率。
+
+word2vec输入输出也算是鬼斧神功，算法跟哈夫曼树有关系。哈夫曼树可以比较准确的表达这边文章的结构。
+
+a,b,c,d分别表示不同词，并附加找个词出现的频率，这些词就能有自己的路径和编码。
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/219_2.png)
+
+
+关于哈夫曼树就不仔细详细说明了，他是一种压缩算法，能很好的保持一篇文章的特性。
+
+训练的过程是，把每一段落取出来，每个词都通过哈夫曼树对应的路径和编码。编码是(0和1)，作为神经网络的输出，每个路径初始化一个给定维数的向量，跟自己段落中的每个词作为输入，进行反向的迭代，就可以训练出参数。
+
+这就是算法的整个过程。
+
+#####应用
+
+word2vec是根据文章中每个词的上下关系，把每个词的关系映射到同一坐标系下，构成了一个大矩阵，矩阵下反映了每个词的关系。这些词的关系是通过上下文相关得出来的，它具有前后序列性，而Word2vec同时采用了哈夫曼的压缩算法，对是一些热门词进行了很好的降权处理。因此他在做一些相似词，或者词语的扩展都有很好的效果。
+
+这种相识性还可以用在，物品的推荐上，根据用户购买物品的顺序，把每个物品当成一个单词，相当于一门外语了，谁也看不懂而已，但里面放映了上下文的关系，这个是很重要的，也是我们一开头那种普通算法无法做到的，同时对一些热门的物品自然有降权的处理，非常的方便。
+
+word2vec自然规避了两大问题：词语的次序和热门词语的降权处理。
+
+#####参考文献
+[机器学习系列-word2vec篇](https://www.jianshu.com/p/3cda276079c7)
+
+####220.
+![220](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-220.jpg?raw=true)
+异或函数。异或（xor）是一个数学运算符。它应用于逻辑运算。异或的数学符号为“⊕”，计算机符号为“xor”。其运算法则为：a⊕b = (¬a ∧ b) ∨ (a ∧¬b)
+如果a、b两个值不相同，则异或结果为1。如果a、b两个值相同，异或结果为0。异或也叫半加运算，其运算法则相当于不带进位的二进制加法：二进制下用1表示真，0表示假，则异或的运算法则为：0⊕0=0，1⊕0=1，0⊕1=1，1⊕1=0（同为0，异为1），这些法则与加法是相同的，只是不带进位。异或略称为XOR、EOR、EX-OR。
+####221.
+####222.
+
+####223.Agglometrative Clustering:
+![223](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-223.jpg?raw=true)
+&#8195;&#8195;Agglometrative Clustering,简写为AGNES，是一种自下而上的聚类算法，是层次聚类的两种方法的其中一种，另一种采用的是自上而下的分拆方法。AGNES的方法是将数据集中的点按照距离分类，这里的距离有很多种，最简单的可以是欧氏距离。AGNES聚类的步骤如下：
+第一步，将所有的数据点单独为类，也就是一万个数据点那就有一万个类，
+第二步，不断的合并类，这里合并的依据是类与类之间的距离。
+第三步，直到某一个指标达到，则停止。如果不停止，那么所有的数据点都会聚为同一个类。
+这里比较值得注意的点是，第二步里，类与类之间的距离的确定。
+一般有三种方法确定三种不同定义的距离：
+对于类$C_i$与$C_j$,$x_i$属于$C_i$,$x_j$属于$C_j$
+
+1最小距离：类与类之间的距离最小的数据点的距离作为类之间的距离。
+数学表示为：$$ d_{min}=(C_i,C_j)=min   distance(x_i,x_j) $$
+
+2最大距离：类与类之间的距离最大的数据点的距离作为类之间的距离。数学表示为：
+$$d_{max}=(C_i,C_j)=max    distance(x_i,x_j)$$
+3平均距离：类与类的所有数据点的平均距离作为类之间的距离。数学表示为：$$d_{avg}=(C_i,C_j)=\frac{1}{|C_i||C_j|}\sum_{x\in C_i} \sum_{x\in C_j}distance(x_i,x_j)$$
+一般情况下，最小距离和最大距离法都由于比较“偏激”而被较少使用，使用最多的是平均距离。
+用图形形象的表示层次聚类法如下：
+![223_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/223_1.png?raw=true)
+
+在最下层，每一个数据单独为类，分类距离越大，则多个类会被划分到同一个类中去。
+
+####224.Chi-Squared（卡方）：
+by-zzx
+![224](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-224.jpg?raw=true)
+* 卡方统计量：Chi-Square Statistic，是配合度检验的统计量，它是由各项实际观测次数（ f0 ）与理论分布次数（f1  ）之差的平方除以理论次数，然后再求和而得出的。$x^2=\sum\frac{(f_0-f_e)^2}{f_e}$ 理论次数越大，该分布与卡方分布越接近，当理论次数  时，与卡方分布符合较好。当超过20%的理论次数小于5，或至少有一个理论次数小于1时，公式右边的表达式与卡方分布偏离较大。因此，其应用条件为至少有80%的理论次数不小于5，并且每个理论次数都不小于1。
+* 卡方分布：若k个随机变量Z1、……、Zk 相互独立，且数学期望为0、方差为 1(即服从标准正态分布)，则随机变量X：$X=\sum_{n=1}^{k} Z_n^2$
+  被称为服从自由度为 k 的卡方分布，记作
+  $X$~ $\chi^2$
+  下表罗列了一些有关卡方分布的性质:
+![224_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zzx%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/224_1.jpeg?raw=true)
+* 卡方检验
+  该检验的基本思想是：首先假设H0成立，基于此前提计算出χ2值，它表示观察值与理论值之间的偏离程度。根据χ2分布及自由度可以确定在H0假设成立的情况下获得当前统计量及更极端情况的概率P。如果P值很小，说明观察值与理论值偏离程度太大，应当拒绝无效假设，表示比较资料之间有显著差异；否则就不能拒绝无效假设，尚不能认为样本所代表的实际情况和理论假设有差别。
+* 利用一个例子来解释卡方检验：假设有两个分类变量X和Y，它们的值域分别为{x1, x2}和{y1, y2}，其样本频数列联表为：
+
+|         | y1     |   y2   |  总计   |
+| ---     | -----:  | :----:  | :----: |
+| x1      | a   |   b     | a+b |
+| x2        |   c   |   d  | c+d |
+| 总计        |    a+c    |  b+d  |  a+b+c+d|
+* 若要推断的论述为H0“X与Y有关系”，可以利用独立性检验来考察两个变量是否有关系，并且能较精确地给出这种判断的可靠程度。具体的做法是，由表中的数据算出$\chi^2$。$\chi^2$越大，说明“X与Y有关系”成立的可能性越小。当表中数据a，b，c，d都不小于5时，可以查阅下表来确定结论“X与Y有关系”的可信程度：
+
+|$P(K^2>=k)$| 0.50 | 0.40 | 0.25 | 0.15 |0.10|
+| ---     | -----:  | :----:  | :----: |:----: |:----: |
+|k | 0.455   | 0.708 |1.323 |2.072 |2.706|
+
+|$P(K^2>=k)$| 0.05 | 0.025 | 0010 | 0.005 | 0.001 |
+| ---     | -----:  | :----:  | :----: |:----: |:----: |
+| k  |3.841|5.024|6.635|7.879|10.828|
+* 例如，当“X与Y有关系”的$\chi^2$为6.109，根据表格，因为5.024≤6.109<6.635，所以“X与Y有关系”成立的概率为0.025，即2.5%。
+
+####225.
+####226.Classification（分类）：
+![226](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-226.jpg?raw=true)
+分类是将一个未知样本分到几个预先已知类的过程。数据分类问题的解决是一个两步过程：第一步，建立一个模型，描述预先的数据集或概念集。通过分析由属性描述的样本（或实例，对象等）来构造模型。假定每一个样本都有一个预先定义的类，由一个被称为类标签的属性确定。为建立模型而被分析的数据元组形成训练数据集，这一步也称作有指导的学习。
+
+在众多的分类模型中，应用最为广泛的两种分类模型是决策树模型（Decision Tree Model）和朴素贝叶斯模型（Naive Bayesian Model，NBC）
+
+决策树模型通过构造树来解决分类问题。首先利用训练数据集来构造一棵决策树，一旦树建立起来，它就可为未知样本产生一个分类。优点：决策树便于使用，而且高效；根据决策树可以很容易地构造出规则，而规则通常易于解释和理解；决策树可很好滴扩展到大型数据库中，同时它的大小独立于数据库的大小；可以对有许多属性的数据集构造决策树。缺点：处理缺失数据时的困难，过度拟合问题的出现，以及忽略数据集中属性之间的相关性等。
+
+参考资料：https://blog.csdn.net/xiaoyu714543065/article/details/7675407
+####227.
+####228.
+####229. common output layer activate functions（一般输出层的激活函数）
+edit  by wqq
+- 激活函数的相关概念之前已经论述过了，这个介绍输出层中常用的激活函数，在二分类问题中常用的激活函数是sigmoid函数，而多分类问题中常用的激活函数是softmax函数，回归问题一般不用激活函数。
+![229_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-229.jpg?raw=true)
+####230.
+####231.
+####232.
+![232](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-232.jpg?raw=true)
+####233.
+####234.
+####235.AIC
+--by zcj
+![](https://github.com/GaoWeio/300-Concepts-of-Machine-Learning/blob/master/4_AIC.png?raw=true)
+
+ &nbsp; 很多参数估计问题均采用似然函数作为目标函数，当训练数据足够多时，可以不断提高模型精度，但是以提高模型复杂度为代价的，同时带来一个机器学习中非常普遍的问题——过拟合。所以，模型选择问题在模型复杂度与模型对数据集描述能力（即似然函数）之间寻求最佳平衡。
+
+$$123$$
+
+  &#8195;&#8195;人们提出许多信息准则，通过加入模型复杂度的惩罚项来避免过拟合问题，此处我们介绍一下常用的两个模型选择方法——赤池信息准则（Akaike Information Criterion，AIC）和贝叶斯信息准则（Bayesian Information Criterion，BIC）。
+&#8195;&#8195;AIC是衡量统计模型拟合优良性的一种标准，由日本统计学家赤池弘次在1974年提出，它建立在熵的概念上，提供了权衡估计模型复杂度和拟合数据优良性的标准。
+&#8198;&#8198;通常情况下，AIC定义为：
+$$AIC=2k-2ln(L)$$
+&#8195;&#8195;其中k是模型参数个数，L是似然函数。从一组可供选择的模型中选择最佳模型时，通常选择AIC最小的模型。
+&#8195;&#8195;当两个模型之间存在较大差异时，差异主要体现在似然函数项，当似然函数差异不显著时，上式第一项，即模型复杂度则起作用，从而参数个数少的模型是较好的选择。
+&#8195;&#8195;一般而言，当模型复杂度提高（k增大）时，似然函数L也会增大(即RSS變小)，从而使AIC变小，但是k过大时，似然函数增速减缓，导致AIC增大，模型过于复杂容易造成过拟合现象。目标是选取AIC最小的模型，AIC不仅要提高模型拟合度（极大似然），而且引入了惩罚项，使模型参数尽可能少，有助于降低过拟合的可能性。
+参考资料：http://blog.csdn.net/lynnucas/article/details/47947943
+
+####236.
+####237.cost and loss function 成本和损失函数
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-237.jpg)
+>翻译：成本函数和损失函数是相同的，他们都是目标函数，我们训练模型的目的就是为了使目标函数最小化，例如：交叉熵
+
+#####概念
+机器学习模型关于单个样本的预测值与真实值的差称为损失。损失越小，模型越好，如果预测值与真实值相等，就是没有损失。
+用于计算损失的函数称为损失函数。模型每一次预测的好坏用损失函数来度量。
+
+#####常用的损失函数
+有以下几种（引用自李航的《统计学习方法》）
+
+1. 0-1损失函数
+![](https://img-blog.csdn.net/20180201113727804?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamllbWluZzIwMDI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+二类分类任务中，预测值与真实值不同，就是预测错误，则损失是1；
+预测值与真实值相等，就是预测正确，损失是 0，就是没有损失。
+
+
+2. 平方损失函数
+![](https://img-blog.csdn.net/20180201113822313?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamllbWluZzIwMDI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+预测值与真实值的差的平方。预测误差越大，损失越大。
+
+3. 绝对损失函数
+![](https://img-blog.csdn.net/20180201113836326?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamllbWluZzIwMDI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+预测值与真实值的差的绝对值。绝对值不方便计算，一般不常用。
+
+4. 对数损失函数
+![](https://img-blog.csdn.net/20180201113848114?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamllbWluZzIwMDI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+对于预测值是概率的情况，取对数损失。因为概率范围[0, 1]，所以对数值是(-∞, 0) ，为了让损失 > 0 所以取对数的负值。上面的公式里面有个负号。
+![](https://img-blog.csdn.net/20180201113858644?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamllbWluZzIwMDI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+
+####238.
+![238](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-238.jpg?raw=true)
+
+
+####239.
+####240.
+####241. curse of dimensionatlity（维诅咒、维灾难）
+edit  by wqq
+- 维灾难是说随着特征变量的增多（此时特征维数在增加），模型的性能将先由弱变强，后又会由强变弱，一旦超出最佳特征维数，高维度将破坏模型预测效果，因为高维度，将数使数据分布过分散，将会带来过拟合的问题。
+![241_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-241.jpg?raw=true)
+- 比如在词向量模型中，如果采用one hot词向量，那么每个维度上只会有一个词，这个词向量的维度会很大，无法体现词与词之间的关系，如果采用更低维的分布式表观的词向量，那么此时，关联词语的位置会较为邻近，例如：
+    ```python
+    model.most_similar(['man'])
+    [(u'woman', 0.5686948895454407),
+    (u'girl', 0.4957364797592163),
+    (u'young', 0.4457539916038513),
+    (u'luckiest', 0.4420626759529114),
+    (u'serpent', 0.42716869711875916),
+    (u'girls', 0.42680859565734863),
+    (u'smokes', 0.4265017509460449),
+    (u'creature', 0.4227582812309265),
+    (u'robot', 0.417464017868042),
+    (u'mortal', 0.41728296875953674)]
+    ```
+- 参考文献：https://blog.csdn.net/shouwangcc/article/details/47961369
+####242.
+####243. dataset augmentation 数据集扩充
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-243.jpg)
+翻译：
+1. 常用于图像识别
+2. 在计算机视觉中，把图像通过旋转、缩放、移动等产生噪音等等。在其他问题中也采用了其他的注入噪声的方法。
+3. 可以大大减少泛化误差。
+
+#####简介
+数据扩充（data augmentation），又名 数据增强。
+其本质即：缺少海量数据时，为了保证模型的有效训练，一分钱掰成两半花。
+
+#####数据扩充方法包括：
+
+简单方法：翻转、旋转、尺度变换、随机抠取、色彩抖动
+复杂方法：Fancy PCA、监督式抠取
+
+#####方法介绍
+
+1. 翻转
+包括：水平翻转、垂直翻转、水平垂直翻转。OpenCV中的 cv2.flip 接口可用于快速实现翻转操作：opencv: cv2.flip 图像翻转 进行 数据增强
+
+2. 旋转
+将原图按照一定角度旋转，作为新图像。
+常取的旋转角度为 -30°、-15°、15°、30° 等较刚好的角度值。
+
+3. 尺度变换
+将图像分辨率变为原图的0.8、0.9、1.1、1.2等倍数，作为新图像。
+
+4. 抠取
+随机抠取：在原图的随机位置抠取图像块，作为新图像。
+监督式抠取：只抠取含有明显语义信息的图像块。
+
+5. 色彩抖动
+对图像原有的像素值分布进行轻微扰动（即加入轻微噪声），作为新图像。
+
+6. Fancy PCA
+对所有训练数据的像素值进行主成分分析（PCA），根据得到的特征向量和特征值计算一组随机值，作为扰动加入到原像素值中。
+
+总之，在实际操作中，常将多种数据扩充操作叠加使用，比如，对原图像分别 (水平、垂直、水平垂直)翻转 和 (-30°、-15°、15°、30°)旋转 后，数据量扩充为原来的8倍。此时，再对这组数据统一各进行一次随机扣取，则数据量翻为原来的16倍。与此类同，我们可以将数据扩充为原来的n次方倍，数据量扩大很多倍
+#####注意
+
+- 不是所有 数据扩充方法都可以一股脑儿随便用。比如对于人脸图片，垂直翻转就变得不可行了。因为现实中基本不会出现对倒过来的人脸进行识别，那么垂直翻转后产生的就几乎是对模型有害的噪声了，这会干扰到模型的正常收敛。
+
+- 另外，如果是 图像检测任务 或者是 图像分割任务 ，记得 将 图像数据 和 标记数据 进行 同步扩充（比如图像翻转时，对应的标记坐标跟着做相应翻转），否则扩充后的新图像对应的却是原图像的标记数据。
+#####参考文献
+[数据扩充 (Data Augmentation)](https://blog.csdn.net/JNingWei/article/details/79219838)
+####244.DBSCAN（基于密度的聚类算法）：
+edit by wgw
+![244](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-244.jpg?raw=true)
+####245.Decision Boundary（决策边界）：
+-by zcj
+![245](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-245.jpg?raw=true)
+
+&#8195;&#8195;决策边界就是能够把样本正确分类的一条边界，主要有线性决策边界(linear decision boundaries)和非线性决策边界(non-linear decision boundaries)。注意：决策边界是假设函数的属性，由参数决定，而不是由数据集的特征决定。下面主要举一些例子，形象化的来说明线性决策边界和非线性决策边界。先看一个线性决策边界的例子：（注：图片来源：ng的machine learning课）
+
+![245_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/245_1.jpeg?raw=true)
+
+&#8195&#8195再来看一个非线性决策边界的例子：
+
+![245_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/245_2.jpeg?raw=true)
+&#8195;&#8195;假设我们的数据呈现出如上图的分布情况，那么我们的模型是什么样才能适合这些数据呢？我们需要的是一个二次方特征。由不同机器学习算法可以得到不同的决策边界，不同的数据或不同的算法都会影响边界的准确性。以下图为例，紫色虚线是贝叶斯决策边界线，黑色实线则是KNN的分类边界，由图可以发现对于该组数据贝叶斯决策边界线是较理想的分类边界。
+![245_3](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zcj%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/245_3.jpeg?raw=true)
+参考资料：http://blog.csdn.net/u012328159/article/details/51068427
+
+####246.
+
+####247. decision tree regression（决策树）
+edit  by wqq
+- 决策树是一种基本的分类和回归方法，其模型呈树状结构，在分类问题中，表示基于特征对实例进行分类的过程，它可以认为是if-then规则的集合，也可以认为是定义在特征空间与类空间上的条件概率分布，其主要特点是模型具有可读性，分类熟读速。
+![247_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-247.jpg?raw=true)
+- 决策树学习通常包括3个步骤：特征选择，决策树的生成和决策树剪枝。决策树的生成算法主要有三种：ID3，C4.5，CART算法（可用于建立回归树）。
+- 在回归树中，采用的是启发式的方法。假如我们有n个特征，每个特征有$s_i(i∈(1,n))$个取值，那我们遍历所有特征，尝试该特征所有取值，对空间进行划分，直到取到特征$j$的取值$s$，使得损失函数最小，这样就得到了一个划分点，通过最优切分特征和划分点就可以构建一颗决策树了，其预测过程和分类树是一样的。描述该过程的公式如下：$$\min_{j_s}[\min_{c_1}Loss(y_i,c_1)+\min_{c_2}Loss(y_i,c_2)]$$其中$c_1,c_2$分表代表切分变量左边元素和右边元素的均值。例如如下图所示，假如我们想要对楼内居民的年龄进行回归，将楼划分为2个区域R1,R2（红线），那么R1的输出$c_1$就是第一列四个居民年龄的平均值，R2的输出$c_2$就是第二列四个居民年龄的平均值。
+    <img src='https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/247_2.jpg?raw=true' height=300>
+
+
+####248.
+####249.derivative 导数
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-249.jpg)
+
+翻译：函数的导数是它变化的速率,直观的来看，某点处的一阶导数是这个点上函数的斜率
+
+导数是函数的局部性质。一个函数在某一点的导数描述了这个函数在这一点附近的变化率。如果函数的自变量和取值都是实数的话，函数在某一点的导数就是该函数所代表的曲线在这一点上的切线斜率。导数的本质是通过极限的概念对函数进行局部的线性逼近。
+
+####250.Design matrix
+edit by wgw
+![250](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-250.jpg?raw=true)
+
+
+
+####251.
+####252.
+####253. dot product（点积）
+edit  by wqq
+- 点积也叫数量积、内积，是两个向量各个维度的数的乘积的和。$$\vec{x} \cdot \vec{y}=\sum_{i=1}^kx_iy_i$$
+![253_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-253.jpg?raw=true)
+####254.
+####255.dropout
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-255.jpg)
+
+#####算法概述
+如果要训练一个大型的网络，训练数据很少的话，那么很容易引起过拟合(也就是在测试集上的精度很低)，可能我们会想到用L2正则化、或者减小网络规模。然而深度学习领域大神Hinton，在2012年文献：《Improving neural networks by preventing co-adaptation of feature detectors》提出了，在每次训练的时候，让一半的特征检测器停过工作，这样可以提高网络的泛化能力，Hinton又把它称之为dropout。
+
+Hinton认为过拟合，可以通过阻止某些特征的协同作用来缓解。在每次训练的时候，每个神经元有百分之50的几率被移除，这样可以让一个神经元的出现不应该依赖于另外一个神经元。
+
+另外，我们可以把dropout理解为模型平均。
+
+假设我们要实现一个图片分类任务，我们设计出了100000个网络，这100000个网络，我们可以设计得各不相同，然后我们对这100000个网络进行训练，训练完后我们采用平均的方法，进行预测，这样肯定可以提高网络的泛化能力，或者说可以防止过拟合，因为这100000个网络，它们各不相同，可以提高网络的稳定性。而所谓的dropout我们可以这么理解，这n个网络，它们权值共享，并且具有相同的网络层数(这样可以大大减小计算量)。我们每次dropout后，网络模型都可以看成是整个网络的子网络。(需要注意的是如果采用dropout，训练时间大大延长，但是对测试阶段没影响)。
+
+Dropout说的简单一点就是我们让在前向传导的时候，让某个神经元的激活值以一定的概率p，让其停止工作，示意图如下：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/255_1.png)
+
+左边是原来的神经网络，右边是采用Dropout后的网络。
+
+第一种理解方式是，在每次训练的时候使用dropout，每个神经元有百分之50的概率被移除，这样可以使得一个神经元的训练不依赖于另外一个神经元，同样也就使得特征之间的协同作用被减弱。Hinton认为，过拟合可以通过阻止某些特征的协同作用来缓解。
+
+第二种理解方式是，我们可以把dropout当做一种多模型效果平均的方式。对于减少测试集中的错误，我们可以将多个不同神经网络的预测结果取平均，而因为dropout的随机性，我们每次dropout后，网络模型都可以看成是一个不同结构的神经网络，而此时要训练的参数数目却是不变的，这就解脱了训练多个独立的不同神经网络的时耗问题。在测试输出的时候，将输出权重除以二，从而达到类似平均的效果。
+
+需要注意的是如果采用dropout，训练时间大大延长，但是对测试阶段没影响。
+
+#####dropout带来的模型的变化
+
+- 训练层面
+无可避免的，训练网络的每个单元要添加一道概率流程。
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/255_2.png)
+    对应的公式变化如下：
+
+    - 没有dropout的神经网络
+    ![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/255_3.png)
+    - 有dropout的神经网络
+
+    ![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/255_4.png)
+
+    上面公式中Bernoulli函数，是为了以概率p，随机生成一个0、1的向量。
+
+- 测试层面
+预测的时候，每一个单元的参数要预乘以p。
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/255_5.png)
+
+#####源码实现
+
+```
+#dropout函数的实现
+def dropout(x, level):
+if level < 0. or level >= 1: #level是概率值，必须在0~1之间
+    raise Exception('Dropout level must be in interval [0, 1[.')
+retain_prob = 1. - level
+#我们通过binomial函数，生成与x一样的维数向量。binomial函数就像抛硬币一样，我们可以把每个神经元当做抛硬币一样
+#硬币 正面的概率为p，n表示每个神经元试验的次数
+#因为我们每个神经元只需要抛一次就可以了所以n=1，size参数是我们有多少个硬币。
+sample=np.random.binomial(n=1,p=retain_prob,size=x.shape)#即将生成一个0、1分布的向量，0表示这个神经元被屏蔽，不工作了，也就是dropout了
+print sample
+x *=sample # 0、1与x相乘，我们就可以屏蔽某些神经元，让它们的值变为0
+print x
+x /= retain_prob
+
+return x
+#对dropout的测试，可以跑一下上面的函数，了解一个输入x向量，经过dropout的结果
+x=np.asarray([1,2,3,4,5,6,7,8,9,10],dtype=np.float32)
+dropout(x,0.4)
+#函数中，x是本层网络的激活值。Level就是dropout就是每个神经元要被丢弃的概率
+```
+#####参考文献：
+[理解dropout](https://blog.csdn.net/stdcoutzyx/article/details/49022443)
+####256.Early Stopping Advantages（提前停止训练的好处）：
+edit by wgw
+![256](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-256.jpg?raw=true)
+提前停止其实是另一种正则化方法，就是在训练集和验证集上，一次迭代之后计算各自的错误率，当在验证集上的错误率最小，在没开始增大之前停止训练，因为如果接着训练，训练集上的错误率一般是会继续减小的，但验证集上的错误率会上升，这就说明模型的泛化能力开始变差了，出现过拟合问题，及时停止能获得泛化更好的模型。如下图（左边是训练集错误率，右图是验证集错误率，在虚线处提前结束训练）：
+![256](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/256_1.jpg?raw=true)
+
+
+
+参考资料：https://blog.csdn.net/leo_xu06/article/details/71320727
+####257.
+####258.
+####259. the effect of one-hot on feature importance（one-hot对特征重要性的影响）
+edit  by wqq
+- 这里可以做一个思考啊，分类时，一般都会选择把类别用one hot进行编码，
+比如共有5个类，那么就有5个编码
+[1 0 0 0 0]
+[0 1 0 0 0]
+[0 0 1 0 0]
+[0 0 0 1 0]
+[0 0 0 0 1]
+
+- 这是为什么呢？为什么不直接用1,2,3,4,5来表示5个类别呢？
+- 不同类别之间并没有具体的数量差异，比如香蕉、苹果、西瓜三种水果的图像分类中，如果单纯的分配1，2，3作为类别，那么香蕉和苹果的差异是1，香蕉和西瓜的差异却是2，显然这样衡量是错误的；另一个很重要的原因在于计算loss时的问题。loss一般用距离来表示，
+如果用1~5来表示，那么1和2的距离时1，而1和5的距离时4，但是按道理1和2、1和5的距离应该一样。
+- 如果用one hot编码表示，那么1和2的距离跟1和5的距离时一样的。
+
+![259_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-259.jpg?raw=true)
+####260.
+####261.elastic net 弹性网
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-261.jpg)
+
+ElasticNet 是一种使用L1和L2先验作为正则化矩阵的线性回归模型.这种组合用于只有很少的权重非零的稀疏模型，比如:class:Lasso, 但是又能保持:class:Ridge 的正则化属性.我们可以使用 l1_ratio 参数来调节L1和L2的凸组合(一类特殊的线性组合)。
+
+当多个特征和另一个特征相关的时候弹性网络非常有用。Lasso 倾向于随机选择其中一个，而弹性网络更倾向于选择两个。
+
+在实践中，Lasso 和 Ridge 之间权衡的一个优势是它允许在循环过程（Under rotate）中继承 Ridge 的稳定性.
+弹性网络的目标函数是最小化:
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/261_1.jpg)
+ElasticNetCV 可以通过交叉验证来用来设置参数:
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/261_2.jpg)
+#####代码部分如下：
+
+```
+import numpy as np
+from sklearn import linear_model
+import warnings
+
+warnings.filterwarnings('ignore')
+
+###############################################################################
+# Generate sample data
+n_samples_train, n_samples_test, n_features = 75, 150, 500
+np.random.seed(0)
+coef = np.random.randn(n_features)
+coef[50:] = 0.0  # only the top 10 features are impacting the model
+X = np.random.randn(n_samples_train + n_samples_test, n_features)
+y = np.dot(X, coef)
+
+# Split train and test data
+X_train, X_test = X[:n_samples_train], X[n_samples_train:]
+y_train, y_test = y[:n_samples_train], y[n_samples_train:]
+
+###############################################################################
+# Compute train and test errors
+alphas = np.logspace(-5, 1, 60)
+enet = linear_model.ElasticNet(l1_ratio=0.7)
+train_errors = list()
+test_errors = list()
+for alpha in alphas:
+    enet.set_params(alpha=alpha)
+    enet.fit(X_train, y_train)
+    train_errors.append(enet.score(X_train, y_train))
+    test_errors.append(enet.score(X_test, y_test))
+
+i_alpha_optim = np.argmax(test_errors)
+alpha_optim = alphas[i_alpha_optim]
+print("Optimal regularization parameter : %s" % alpha_optim)
+
+# Estimate the coef_ on full data with optimal regularization parameter
+enet.set_params(alpha=alpha_optim)
+coef_ = enet.fit(X, y).coef_
+
+###############################################################################
+# Plot results functions
+
+import matplotlib.pyplot as plt
+
+plt.subplot(2, 1, 1)
+plt.semilogx(alphas, train_errors, label='Train')
+plt.semilogx(alphas, test_errors, label='Test')
+plt.vlines(alpha_optim, plt.ylim()[0], np.max(test_errors), color='k',
+           linewidth=3, label='Optimum on test')
+plt.legend(loc='lower left')
+plt.ylim([0, 1.2])
+plt.xlabel('Regularization parameter')
+plt.ylabel('Performance')
+
+# Show estimated coef_ vs true coef
+plt.subplot(2, 1, 2)
+plt.plot(coef, label='True coef')
+plt.plot(coef_, label='Estimated coef')
+plt.legend()
+plt.subplots_adjust(0.09, 0.04, 0.94, 0.94, 0.26, 0.26)
+plt.show()
+```
+结果如下图所示：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/261_3.png)
+
+#####控制台结果如下：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/261_4.png)
+
+elastic net的大部分函数也会与之前的大体相似，所以这里仅仅介绍一些比较经常用的到的或者特殊的参数或函数：
+
+#####参数：
+- **l1_ratio:**在0到1之间，代表在l1惩罚和l2惩罚之间，如果l1_ratio=1，则为lasso，是调节模型性能的一个重要指标。
+- **eps:**Length of the path. eps=1e-3 means that alpha_min / alpha_max = 1e-3
+- **n_alphas:**正则项alpha的个数
+- **alphas：**alpha值的列表
+
+#####返回值：
+- alphas：返回模型中的alphas值。
+- coefs：返回模型系数。shape=（n_feature,n_alphas）
+
+#####函数：
+score（X,y,sample_weight）: 评价模型性能的标准，值越接近1，模型效果越好。
+
+#####参考文献
+[弹性网络（Elastic Net）](https://blog.csdn.net/m0_37167788/article/details/78657523)
+
+####262.ELUs,
+![262](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-262.jpg?raw=true)
+ELU函数是激活函数。在人工神经网络中，神经元节点的激活函数定义了对神经元输出的映射，简单来说，神经元的输出（例如，全连接网络中就是输入向量与权重向量的内积再加上偏置项）经过激活函数处理后再作为输出。加拿大蒙特利尔大学的Bengio教授在 ICML 2016 的文章[1]中给出了激活函数的定义：激活函数是映射 h:R→R，且几乎处处可导。
+先说ReLU函数，ReLU函数公式和曲线如下：
+relu函数公式：$f(x)=max(0,x)$
+relu函数图
+![268_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/262_1.png?raw=true)
+ReLU(Rectified Linear Unit)函数是目前比较火的一个激活函数，相比于sigmod函数和tanh函数，它有以下几个优点：
+
+1) 在输入为正数的时候，不存在梯度饱和问题。
+
+2) 计算速度要快很多。ReLU函数只有线性关系，不管是前向传播还是反向传播，都比sigmod和tanh要快很多。（sigmod和tanh要计算指数，计算速度会比较慢）
+
+当然，缺点也是有的：
+
+1) 当输入是负数的时候，ReLU是完全不被激活的，这就表明一旦输入到了负数，ReLU就会死掉。这样在前向传播过程中，还不算什么问题，有的区域是敏感的，有的是不敏感的。但是到了反向传播过程中，输入负数，梯度就会完全到0，这个和sigmod函数、tanh函数有一样的问题。
+
+2) 我们发现ReLU函数的输出要么是0，要么是正数，这也就是说，ReLU函数也不是以0为中心的函数。
+
+ELU函数:ELU函数公式和曲线如下图
+ELU函数公式:
+$$ f(n)= \begin{cases} x, & \text {x > 0} \\ \alpha(e^x-1), & \text{x $\leq$ 0} \end{cases} $$
+ELU函数图
+![268_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/262_2.png?raw=true)
+ELU函数是针对ReLU函数的一个改进型，相比于ReLU函数，在输入为负数的情况下，是有一定的输出的，而且这部分输出还具有一定的抗干扰能力。这样可以消除ReLU死掉的问题，不过还是有梯度饱和和指数运算的问题。
+参考资料：https://blog.csdn.net/ddreaming/article/details/53224124
+https://blog.csdn.net/kangyi411/article/details/78969642
+####263.
+####264.
+####265. epoch
+edit  by wqq
+- 所有训练数据都进过神经网络训练一次就叫做一个epoch，一个模型通常要很多个epoch才能训练出来。
+![265_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-265.jpg?raw=true)
+####266.
+####267.explained sum of squares 回归平方和
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-267.jpg)
+
+翻译：ess测量的方差(信息)模型
+
+回归平方和，是反映自变量与因变量之间的相关程度的偏差平方和。用回归方程或回归线来描述变量之间的统计关系时，实验值yi与按回归线预测的值Yi并不一定完全一致。
+
+是用于描述一个模型（通常是一个回归模型）如何很好地代表正在建模的数据。具体来说，解释的平方和测量模型值中存在多少变化，并将其与总平方进行比较，所述总平方测量观察数据中存在多少变化，并且与剩余平方和，它测量模型误差的变化。
+一般来说，ESS越大，估计模型的性能就越好。
+#####参考文献
+[explained sum of squares](https://en.wikipedia.org/wiki/Explained_sum_of_squares)
+
+####268.Anscombe$^\prime$s Quartet（安斯库姆四重奏）：
+by-wgw
+![268](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-268.jpg?raw=true)
+&#8195;&#8195;安斯库姆四重奏是四组具有完全相同的统计特征的数据，这些统计特征包括均值，方差，回归曲线方程等，然而，当把这四组数据以散点图的形式展示出来时会发现这四组数据是极不相同的。安斯库姆四重奏表明，仅仅用简单的统计特征量表述数据是会遗漏某些反应了数据本质的其他重要特征的，在应用数据前对数据进行可视化是非常重要的。当然，安斯库姆四重奏是为了说明统计描述的局限性以及数据可视化的重要性，而精心设计出的四组数据，在现实中这样的情况并不多见。
+安斯库姆四重奏散点图：
+![268_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/268_1.jpeg?raw=true)
+安斯库姆四重奏统计特征：
+![268_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wgw%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/268_2.jpeg?raw=true)
+
+####269.
+####270.
+####271.F-Statistic（F分布）：
+by-zzx
+![271](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-271.jpg?raw=true)
+* F分布
+设X1服从自由度为m的χ2分布,X2服从自由度为n的χ2分布，且X1、X2相互独立，则称变量F=(X1/m)/(X2/n)所服从的分布为F分布，其中第一自由度为m,第二自由度为n。
+其密度函数如下图所示
+![271_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zzx%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/271_1.jpg?raw=true)
+* 有如下性质：
+    1. 期望(F)=n/(n-2)，方差D(F)=2n^2(m+n-2)/m(n-2)^2(n-4)
+    2. 若F\~F(m,n)，则1/F~F(n,m)
+    3. 若F\~F(1,n)，T~T(n)，则F=T^2
+* F统计量
+  公式见卡片。其中TSS为总平方和，RSS为残差平方和，两者相减为回归平方和。
+  此统计量用于F检验，用于两个及两个以上样本均数差别的显著性检验。
+* F检验
+  F检验，又做联合假设检验、方差比率检验、方差齐性检验。它是一种在零假设之下，统计值服从F-分布的检验。目的是通过数据分析找出对该事物有显著影响的因素，各因素之间的交互作用，以及显著影响因素的最佳水平等。是在可比较的数组中，把数据间的总的“变差”按各指定的变差来源进行分解的一种技术。
+* 检验过程
+  计算样本F统计量，与F表中的值比较，如果：
+  F < F表 表明两组数据没有显著差异；
+  F ≥ F表 表明两组数据存在显著差异。
+  下表为置信度95%时的F值（单边）
+![271_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/zzx%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/271_2.png?raw=true)
+* F检验对于数据的正态性非常敏感，因此在检验方差齐性的时候，Levene检验, Bartlett检验或者Brown–Forsythe检验的稳健性都要优于F检验。
+
+####272.F1 Score（F1分数）：
+-by zcj
+![272](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-272.jpg?raw=true)
+
+&#8195;&#8195;F1分数（F1 Score），是统计学中用来衡量二分类模型精确度的一种指标。它同时兼顾了分类模型的准确率和召回率。F1分数可以看作是模型准确率和召回率的一种加权平均，它的最大值是1，最小值是0。
+&#8195&#8195数学定义:F1分数（F1Score），又称平衡F分数（Balanced F Score），它被定义为精确率和召回率的调和平均数。
+$$F_1=2\frac{precision·recall}{precision+recall}$$
+更一般的，我们定义$F_\beta$分数为
+$$F_\beta=(1+\beta^2)\frac{precision·recall}{\beta^2·precision+recall}$$
+
+&#8195;&#8195; 物理意义：人们通常使用准确率和召回率这两个指标，来评价二分类模型的分析效果。但是当这两个指标发生冲突时，我们很难在模型之间进行比较。比如，我们有如下两个模型A、B，A模型的召回率高于B模型，但是B模型的准确率高于A模型，A和B这两个模型的综合性能，哪一个更优呢？
+|   模型    |    准确率  |  召回率 |
+|  :--:    |    :--:   |   :--: |
+| A        |      80%  |   90%  |
+| B        |      90%  |   80%  |
+
+
+
+
+
+&#8195;&#8195;为了解决这个问题，人们提出了$F_B$分数。FB的物理意义就是将准确率和召回率这两个分值合并为一个分值，在合并的过程中，召回率的权重是准确率的B倍。F1分数认为召回率和准确率同等重要，F2分数认为召回率的重要程度是准确率的2倍，而F0.5分数认为召回率的重要程度是准确率的一半。
+&#8195;&#8195;应用领域：F分数被广泛应用在信息检索领域，用来衡量检索分类和文档分类的性能。早期人们只关注F1分数，但是随着谷歌、百度等大型搜索引擎的兴起，召回率和准确率对性能影响的权重开始变得不同，人们开始更关注其中的一种，所以$F_B$分数得到越来越广泛的应用。F分数也被广泛应用在自然语言处理领域，比如命名实体识别、分词等，用来衡量算法或系统的性能。
+
+补充：
+1. G分数是另一种统一准确率和召回率的系统性能评估标准。F分数是准确率和召回率的调和平均数，G分数被定义为准确率和召回率的几何平均数。
+
+2. 精确率、召回率、F1 值、ROC、AUC 各自的优缺点是什么?
+https://www.zhihu.com/question/30643044
+
+参考资料：https://baike.baidu.com/item/F1%E5%88%86%E6%95%B0/13864979?fr=aladdin
+
+####273. FPR false positive rate 误检率
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-273.jpg)
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/273_1.png)
+
+首先要搞明白tp,fp,fn,tn分别是什么意思，actual class指的是实际正确的分类，predicted class指的是我们判断的分类。
+$t:ture;$
+$f:false;$
+$p:positive;$
+$n:negative$
+$p,n是实际结果$
+$t,f表示预测结果的真假$
+
+$FPT=\frac{sum(fp)}{sum(fp)+sum(tn)}$
+
+查准率：
+$precision-rate=\frac{sum(tp)}{sum(tp)+sum(fp)}$
+查全率：
+$recall-rate=\frac{sum(tp)}{sum(tp)+sum(fn)}$
+
+误检率是相对于虚假目标的总量里有多少被误识为真实目标；
+查准率是指检测到的目标里，真实目标所占的比例；
+查全率就是检测到的真实目标，在所有真实目标的比例。
+#####参考文献
+[false positive rate](https://blog.csdn.net/weixin_41284198/article/details/80391299)
+####274.Feature Importance
+![274](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-274.jpg?raw=true)
+摘要：在随机森林介绍中提到了随机森林一个重要特征：能够计算单个特征变量的重要性。并且这一特征在很多方面能够得到应用,例如在银行贷款业务中能否正确的评估一个企业的信用度,关系到是否能够有效地回收贷款。但是信用评估模型的数据特征有很多,其中不乏有很多噪音,所以需要计算出每一个特征的重要性并对这些特征进行一个排序,进而可以从所有特征中选择出重要性靠前的特征。
+
+一：特征重要性
+在随机森林中某个特征X的重要性的计算方法如下：
+
+1：对于随机森林中的每一颗决策树,使用相应的OOB(袋外数据)数据来计算它的袋外数据误差,记为errOOB1.
+
+2:  随机地对袋外数据OOB所有样本的特征X加入噪声干扰(就可以随机的改变样本在特征X处的值),再次计算它的袋外数据误差,记为errOOB2.
+
+3：假设随机森林中有Ntree棵树,那么对于特征X的重要性=∑(errOOB2-errOOB1)/Ntree,之所以可以用这个表达式来作为相应特征的重要性的度量值是因为：若给某个特征随机加入噪声之后,袋外的准确率大幅度降低,则说明这个特征对于样本的分类结果影响很大,也就是说它的重要程度比较高。
+
+
+
+二：特征选择
+在论文 Variable Selection using Random Forests中详细的论述了基于随机森林的特征选择方法,这里我们进行一些回顾。
+
+首先特征选择的目标有两个：
+
+1：找到与应变量高度相关的特征变量。
+
+2：选择出数目较少的特征变量并且能够充分的预测应变量的结果。
+
+其次一般特征选择的步骤为：
+
+1：初步估计和排序
+
+a)对随机森林中的特征变量按照VI（Variable Importance）降序排序。
+
+b)确定删除比例,从当前的特征变量中剔除相应比例不重要的指标，从而得到一个新的特征集。
+
+c)用新的特征集建立新的随机森林,并计算特征集中每个特征的VI,并排序。
+
+d)重复以上步骤,直到剩下m个特征。
+
+2：根据1中得到的每个特征集和它们建立起来的随机森林,计算对应的袋外误差率(OOB err),将袋外误差率最低的特征集作为最后选定的特征集。
+参考资料：https://blog.csdn.net/u010685891/article/details/50516889
+####275.
+####276.
+####277. linear regression（线性回归）
+edit  by wqq
+![277_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-277.jpg?raw=true)
+- 一个线性回归模型的是为了寻找能最佳拟合数据的一条直线$Xw=y$，$w,y$都是一维列向量。那么回归参数$w$的估计量为：$$w=(X^TX)^{-1}X^Ty$$
+    <img src='https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/277_2.jpg?raw=true' height=400>
+- 当然还可以用最小二乘法或者是梯度下降法来求解，其目标函数是：$$min L(w)=\sum (y_i-X_iw_i)^2$$
+####278.
+
+####279.architecture of a neural network 神经网络的结构
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-279.jpg)
+
+翻译：
+
+1. 神经网络的体系结构是指单位,其激活功能,有多少层
+2. 大多数的神经网络结构可以理解为单位层的堆积。
+3. 解决问题的最佳体系结构应该通过使用验证集进行实验来找到
+
+以监督学习为例，假设我们有训练样本集  $\textstyle (x(^ i),y(^ i)) $，那么神经网络算法能够提供一种复杂且非线性的假设模型 $\textstyle h_{W,b}(x) $，它具有参数 $\textstyle W, b $，可以以此参数来拟合我们的数据。
+
+为了描述神经网络，我们先从最简单的神经网络讲起，这个神经网络仅由一个“神经元”构成，以下即是这个“神经元”的图示：
+SingleNeuron.png
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/279_1.png)
+这个“神经元”是一个以 $\textstyle x_1, x_2, x_3 $及截距 $\textstyle +1 $为输入值的运算单元，其输出为 $\textstyle  h_{W,b}(x) = f(W^Tx) = f(\sum_{i=1}^3 W_{i}x_i +b) $，其中函数 $\textstyle f : \Re \mapsto \Re $被称为“激活函数”。我们选用sigmoid函数作为激活函数 $\textstyle f(\cdot)$
+
+
+$f(z) = \frac{1}{1+\exp(-z)}$.
+可以看出，这个单一“神经元”的输入－输出映射关系其实就是一个逻辑回归（logistic regression）。
+
+虽然本系列教程采用sigmoid函数，但你也可以选择双曲正切函数（tanh）：
+
+
+$f(z) = \tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}$,
+以下分别是sigmoid及tanh的函数图像
+Sigmoid activation function. Tanh activation function.
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/279_7.png)
+
+$\textstyle \tanh(z) $函数是sigmoid函数的一种变体，它的取值范围为$ \textstyle [-1,1]$ ，而不是sigmoid函数的 $\textstyle [0,1]$ 。
+
+注意，与其它地方（包括OpenClassroom公开课以及斯坦福大学CS229课程）不同的是，这里我们不再令 $\textstyle x_0=1 $。取而代之，我们用单独的参数 $\textstyle b $来表示截距。
+
+最后要说明的是，有一个等式我们以后会经常用到：如果选择 $\textstyle f(z) = 1/(1+\exp(-z))$ ，也就是sigmoid函数，那么它的导数就是 $\textstyle f'(z) = f(z) (1-f(z)) $（如果选择tanh函数，那它的导数就是 $\textstyle f'(z) = 1- (f(z))^2$ ，你可以根据sigmoid（或tanh）函数的定义自行推导这个等式。
+
+#####神经网络模型
+
+所谓神经网络就是将许多个单一“神经元”联结在一起，这样，一个“神经元”的输出就可以是另一个“神经元”的输入。例如，下图就是一个简单的神经网络：
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/279_5.jpg)
+
+我们使用圆圈来表示神经网络的输入，标上“$\textstyle +1$”的圆圈被称为偏置节点，也就是截距项。神经网络最左边的一层叫做输入层，最右的一层叫做输出层（本例中，输出层只有一个节点）。中间所有节点组成的一层叫做隐藏层，因为我们不能在训练样本集中观测到它们的值。同时可以看到，以上神经网络的例子中有3个输入单元（偏置单元不计在内），3个隐藏单元及一个输出单元。
+
+我们用 $\textstyle {n}_l $来表示网络的层数，本例中 $\textstyle n_l=3 $，我们将第 $\textstyle l $层记为 $\textstyle L_l $，于是 $\textstyle L_1 $是输入层，输出层是 $\textstyle L_{n_l}$ 。本例神经网络有参数 $\textstyle (W,b) = (W^{(1)}, b^{(1)}, W^{(2)}, b^{(2)}) $，其中 $\textstyle W^{(l)}_{ij}$ （下面的式子中用到）是第 $\textstyle l $层第 $\textstyle j $单元与第 $\textstyle l+1 $层第 $\textstyle i $单元之间的联接参数（其实就是连接线上的权重，注意标号顺序）， $\textstyle b^{(l)}_i$ 是第 $\textstyle l+1 $层第 $\textstyle i$ 单元的偏置项。因此在本例中，$ \textstyle W^{(1)} \in \Re^{3\times 3} $， $\textstyle W^{(2)} \in \Re^{1\times 3} $。注意，没有其他单元连向偏置单元(即偏置单元没有输入)，因为它们总是输出 $\textstyle +1$。同时，我们用 $\textstyle s_l $表示第 $\textstyle l$ 层的节点数（偏置单元不计在内）。
+
+我们用 $\textstyle a^{(l)}_i$ 表示第 $\textstyle l$ 层第 $\textstyle i$ 单元的激活值（输出值）。当 $\textstyle l=1$ 时，$ \textstyle a^{(1)}_i = x_i $，也就是第$ \textstyle i $个输入值（输入值的第 $\textstyle i$ 个特征）。对于给定参数集合 $\textstyle W,b$ ，我们的神经网络就可以按照函数 $\textstyle h_{W,b}(x)$ 来计算输出结果。本例神经网络的计算步骤如下：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/279_3.jpg)
+我们用$ \textstyle z^{(l)}_i $表示第 $\textstyle l $层第 $\textstyle i $单元输入加权和（包括偏置单元），比如， $\textstyle  z_i^{(2)} = \sum_{j=1}^n W^{(1)}_{ij} x_j + b^{(1)}_i $，则 $\textstyle a^{(l)}_i = f(z^{(l)}_i) $。
+
+这样我们就可以得到一种更简洁的表示法。这里我们将激活函数 $\textstyle f(\cdot)$ 扩展为用向量（分量的形式）来表示，即 $\textstyle f([z_1, z_2, z_3]) = [f(z_1), f(z_2), f(z_3)] $，那么，上面的等式可以更简洁地表示为：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/279_4.jpg)
+我们将上面的计算步骤叫作前向传播。回想一下，之前我们用 $\textstyle a^{(1)} = x $表示输入层的激活值，那么给定第 $\textstyle l $层的激活值 $\textstyle a^{(l)}$ 后，第 $\textstyle l+1 $层的激活值 $\textstyle a^{(l+1)}$ 就可以按照下面步骤计算得到：
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/279_5.jpg)
+将参数矩阵化，使用矩阵－向量运算方式，我们就可以利用线性代数的优势对神经网络进行快速求解。
+
+目前为止，我们讨论了一种神经网络，我们也可以构建另一种结构的神经网络（这里结构指的是神经元之间的联接模式），也就是包含多个隐藏层的神经网络。最常见的一个例子是 $\textstyle  n_l$ 层的神经网络，第 $\textstyle  1$ 层是输入层，第 $\textstyle  n_l $层是输出层，中间的每个层 $\textstyle  l $与层 $\textstyle  l+1 $紧密相联。这种模式下，要计算神经网络的输出结果，我们可以按照之前描述的等式，按部就班，进行前向传播，逐一计算第 $\textstyle  L_2$ 层的所有激活值，然后是第 $\textstyle  L_3 $层的激活值，以此类推，直到第 $\textstyle  L_{n_l}$ 层。这是一个前馈神经网络的例子，因为这种联接图没有闭环或回路。
+
+神经网络也可以有多个输出单元。比如，下面的神经网络有两层隐藏层： $\textstyle L_2 $及 $\textstyle L_3$ ，输出层 $\textstyle L_4 $有两个输出单元。
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/279_6.png)
+要求解这样的神经网络，需要样本集 $ \textstyle (x^{(i)}, y^{(i)}) $，其中 $\textstyle y^{(i)} \in \Re^2 $。如果你想预测的输出是多个的，那这种神经网络很适用。（比如，在医疗诊断应用中，患者的体征指标就可以作为向量的输入值，而不同的输出值$ \textstyle y_i$ 可以表示不同的疾病存在与否。）
+#####参考文献
+[神经网络](http://ufldl.stanford.edu/wiki/index.php/神经网络)
+
+####280.Fowlkes-Mallows-Score（福克斯-马洛斯得分）：
+by-wgw
+![280](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-280.jpg?raw=true)
+&#8195;&#8195;福克斯-马洛斯得分也称$FMI$得分，是对聚类模型的性能度量的一种方法。对于给定数据集，参考模型和测试模型分别给出的了簇划分。对于任意一对数据的划分，分为四种情况：
+1，参考模型划入同一簇，测试模型也划入同一簇。以TP（True Positive）表示。
+2，参考模型划入同一簇，测试模型未划入同一簇。以FN（False Negative）表示。
+3，参考模型未划入同一簇，测试模型划入同一簇。以FP（False Positive）表示。
+4，参考模型未划入同一簇，测试模型也未划入同一簇。以TN（True Negative）表示。
+则FMI得分是：$$FMI=\frac{TP}{\sqrt{(TP+FN)(TP+FP)}}$$
+FMI得分越高，说明测试模型与参考模型越接近。
+
+####281.
+####282.
+####283.
+####284.
+####285. 基尼指数
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-285.jpg)
+
+20世纪初意大利经济学家基尼，于1922年提出的定量测定收入分配差异程度的指标。它是根据洛伦茨曲线找出了判断分配平等程度的指标（如下图）。
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/285_1.jpg)
+
+　设实际收入分配曲线和收入分配绝对平等曲线之间的面积为A，实际收入分配曲线右下方的面积为B。并以A除以A+B的商表示不平等程度。这个数值被称为基尼系数或称洛伦茨系数。如果A为零，基尼系数为零，表示收入分配完全平等；如果B为零则系数为1，收入分配绝对不平等。该系数可在零和1之间取任何值。收入分配越是趋向平等，洛伦茨曲线的弧度越小，基尼系数也越小，反之，收入分配越是趋向不平等，洛伦茨曲线的弧度越大，那么基尼系数也越大。如果个人所得税能使收入均等化，那么，基尼系数即会变小。
+
+基尼系数的计算公式为：
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/285_2.png)
+
+其中，X代表各组的人口比重，Y代表各组的收入比重，V代表各组累计的收入比重，i=1，2，3，…，n，n代表分组的组数。
+
+#####基尼指数（ CART算法 ---分类树）
+定义：基尼指数（基尼不纯度）：表示在样本集合中一个随机选中的样本被分错的概率。
+
+注意： Gini指数越小表示集合中被选中的样本被分错的概率越小，也就是说集合的纯度越高，反之，集合越不纯。
+
+即 基尼指数（基尼不纯度）= 样本被选中的概率 * 样本被分错的概率
+
+书中公式：
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/285_3.png)
+
+说明:
+
+1. pk表示选中的样本属于k类别的概率，则这个样本被分错的概率是(1-pk)
+
+2. 样本集合中有K个类别，一个随机选中的样本可以属于这k个类别中的任意一个，因而对类别就加和
+
+3. 当为二分类是，Gini(P) = 2p(1-p)
+
+样本集合D的Gini指数 ： 假设集合中有K个类别，则：
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/285_4.png)
+
+基于特征A划分样本集合D之后的基尼指数：
+
+需要说明的是CART是个二叉树，也就是当使用某个特征划分样本集合只有两个集合：1. 等于给定的特征值 的样本集合D1 ， 2 不等于给定的特征值 的样本集合D2
+
+实际上是对拥有多个取值的特征的二值处理。
+
+举个例子：
+
+假设现在有特征 “学历”，此特征有三个特征取值： “本科”，“硕士”， “博士”，
+
+当使用“学历”这个特征对样本集合D进行划分时，划分值分别有三个，因而有三种划分的可能集合，划分后的子集如下：
+
+划分点： “本科”，划分后的子集合 ： {本科}，{硕士，博士}
+划分点： “硕士”，划分后的子集合 ： {硕士}，{本科，博士}
+    划分点： “硕士”，划分后的子集合 ： {博士}，{本科，硕士}
+          对于上述的每一种划分，都可以计算出基于 划分特征= 某个特征值 将样本集合D划分为两个子集的纯度：
+
+
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/285_5.png)
+
+因而对于一个具有多个取值（超过2个）的特征，需要计算以每一个取值作为划分点，对样本D划分之后子集的纯度
+Gini(D,Ai)，(其中Ai 表示特征A的可能取值)
+
+然后从所有的可能划分的Gini(D,Ai)中找出Gini指数最小的划分，这个划分的划分点，便是使用特征A对样本集合D进行划分的最佳划分点。
+
+
+#####参考文献
+[决策树与基尼指数](https://www.cnblogs.com/muzixi/p/6566803.html)
+[决策树之基尼系数](https://blog.csdn.net/qq_16365849/article/details/50644496)
+by-wgw
+![285](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-285.jpg?raw=true)
+&#8195;&#8195;在决策树模型中，需要确定哪些分类的属性作为分枝节点。我们选择那些使得数据集每一次分类后，子集的纯度最高的属性。基尼指数就是指示数据集纯度的指标。对于第m个节点，根据属性I数据集D可以分为k类，那么基尼指数为：
+$$Gini(D_i)=\sum_{k=1}^kp_{mk}(1-p_{mk})$$
+&#8195;&#8195;当$p_{mk}$越接近$0$或$1$时，$Gini(D_i)$越小，也表示数据集的纯度越高，相应的属性$I$就越适合模型，当$p_{mk}$越接近$\frac{1}{2}$时，$Gini(D_i)$越大，也表示数据集$I$的纯度越低相应的属性$I$也就越不适合模型。
+####286.
+![286](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-286.jpg?raw=true)
+
+
+
+####287.Gradient Cliff（梯度陡峭）：
+by-zzx
+![287](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-287.jpg?raw=true)
+梯度陡峭:
+在梯度下降方法中，会选取一定的间距，沿梯度下降的方向求解极小值。当在一个间距中出现梯度陡峭现象时，可能出现预期极小值被跳过的现象，如图所示。理论上间距都趋近无穷小时，会寻找到预期的极小值，但是极大的增加了运算时间。因此需要合适的算法，保证相对较短的运算时间，并且减小避开梯度陡峭的现象。
+优化方法：
+Adagrad算法很好地减小了遇到上述问题的概率。它是一种自适应地为各个参数分配不同学习率的算法。
+$$\theta_{i,t+1}=\theta_{i,t}-\nabla J(\theta)\eta/(G_{i,t-1}+\epsilon)^{1/2} $$
+t代表每一次迭代，gt是前t步参数θi梯度的累加。η是初始学习率，之后会自动调整学习率。而ϵ是一个比较小的数，用来保证分母非0。
+可以看出，随着算法不断的迭代，Gt会越来越大，整体的学习率会越来越小。所以一般来说Adagrad算法一开始是激励收敛，到了后面就慢慢变成惩罚收敛，速度越来越慢。
+参考资料：
+http://blog.csdn.net/luo123n/article/details/48239963
+http://blog.csdn.net/tsyccnh/article/details/76769232
+
+
+
+
+
+
+####288.
+####289. Gradient descent rule of thumb（梯度下降经验法则）
+edit  by wqq
+- 如果特征的尺度不接近，梯度下降将会花费很长的时间。所以吴恩达的法则是如果特征的值的范围是在-3 ~ 3或者-$\frac{1}{3}$~$\frac{1}{3}$之间就可以接受。
+![289_1](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-289.jpg?raw=true)
+- 当面临各个特征的尺度变化很大时，合理的解决方法是通过一些标准化措施来调整尺度，比如简单缩放，min-max标准化（Min-max normalization），离差标准化，标准差标准化等。
+![289_2](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/wqq%E5%BC%95%E7%94%A8%E5%9B%BE%E7%89%87/289_2.jpg?raw=true)
+####290.AUC
+-by zcj
+
+
+![Alt text](./26_AUC Area Under The Curve.jpeg)
+
+
+&#8195&#8195ROC（Receiver Operating Characteristic）曲线和AUC常被用来评价一个二值分类器（binary classifier）的优劣，对两者的简单介绍见这里。这里简单介绍ROC和AUC的特点，以及如何作出ROC曲线图并计算AUC。
+
+ROC曲线
+&#8195&#8195对于分类器（这里讨论二值分类），或者说分类算法，评价指标主要有precision、recall、F1-score、以及ROC和AUC。下图是一个ROC曲线的示例。
+![Alt text](./ROC曲线示例.jpeg)
+<center>ROC曲线示例</center>
+
+&#8195&#8195正如在这个ROC曲线的示例图中看到的那样，ROC曲线的横坐标为False positive rate（FP rate），纵坐标为True positive rate（TP rate）。下图中详细说明了FP和TP是如何定义的。
+![Alt text](./FP_TP定义.jpeg)
+
+
+&#8195&#8195接下来考虑ROC曲线图中的四个点和一条线。第一个点(0,1)，即FPR=0, TPR=1，这意味着FN（False negative）=0，并且FP（False positive）=0。这是一个完美的分类器，它将所有的样本都正确分类。第二个点，(1,0)，即FP rate=1，TP rate=0，类似地分析可以发现这是一个最糟糕的分类器，因为它成功避开了所有的正确答案。第三个点，(0,0)，即FPR=TPR=0，即FP（False positive）=TP（True positive）=0，可以发现该分类器预测所有的样本都为负样本（Negative）。类似的，第四个点（1,1），分类器实际上预测所有的样本都为正样本。经过以上的分析，我们可以断言，ROC曲线越接近左上角，该分类器的性能越好。
+&#8195&#8195下面考虑ROC曲线图中的虚线y=x上的点。这条对角线上的点其实表示的是一个采用随机猜测策略的分类器的结果，例如(0.5,0.5)，表示该分类器随机对于一半的样本猜测其为正样本，另外一半的样本为负样本。
+
+&#8195&#8195如何画ROC曲线：对于一个特定的分类器和测试数据集，显然只能得到一个分类结果，即一组FPR和TPR结果，而要得到一个曲线，我们实际上需要一系列FPR和TPR的值，这又是如何得到的呢？我们先来看一下Wikipedia上对ROC曲线的定义：In signal detection theory, a receiver operating characteristic (ROC), or simply ROC curve, is a graphical plot which illustrates the performance of a binary classifier system as its discrimination threshold is varied.
+&#8195&#8195问题在于“as its discrimination threashold is varied”。如何理解这里的“discrimination threashold”呢？我们忽略了分类器的一个重要功能“概率输出”，即表示分类器认为某个样本具有多大的概率属于正样本（或负样本）。通过更深入地了解各个分类器的内部机理，我们总能想办法得到一种概率输出。通常来说，是将一个实数范围通过某个变换映射到(0,1)区间。
+    假如我们已经得到了所有样本的概率输出（属于正样本的概率），现在的问题是如何改变“discrimination threashold”呢？我们根据每个测试样本属于正样本的概率值从大到小排序。下图是一个示例，图中共有20个测试样本，“Class”一栏表示每个测试样本真正的标签（p表示正样本，n表示负样本），“Score”表示每个测试样本属于正样本的概率。
+
+![Alt text](./AUC_概率从大到小排序.jpeg)
+
+&#8195&#8195接下来，我们从高到低，依次将“Score”值作为阈值threshold，当测试样本属于正样本的概率大于或等于这个threshold时，我们认为它为正样本，否则为负样本。举例来说，对于图中的第4个样本，其“Score”值为0.6，那么样本1，2，3，4都被认为是正样本，因为它们的“Score”值都大于等于0.6，而其他样本则都认为是负样本。每次选取一个不同的threshold，我们就可以得到一组FP rate和TP rate，即ROC曲线上的一点。这样一来，我们一共得到了20组FP rate和TP rate的值，将它们画在ROC曲线的结果如下图：
+
+![Alt text](./AUC_False positive rate0.jpeg)
+
+&#8195&#8195当我们将threshold设置为1和0时，分别可以得到ROC曲线上的(0,0)和(1,1)两个点。将这些(FPR,TPR)对连接起来，就得到了ROC曲线。当threshold取值越多，ROC曲线越平滑。
+&#8195&#8195AUC（Area Under Curve）被定义为ROC曲线下的面积，显然这个面积的数值不会大于1。又由于ROC曲线一般都处于y=x这条直线的上方，所以AUC的取值范围在0.5和1之间。使用AUC值作为评价标准是因为很多时候ROC曲线并不能清晰的说明哪个分类器的效果更好，而作为一个数值，对应AUC更大的分类器效果更好。
+&#8195&#8195在了解了ROC曲线的构造过程后，编写代码实现并不是一件困难的事情。相比自己编写代码，有时候阅读其他人的代码收获更多，当然过程也更痛苦些。在此推荐scikit-learn中关于计算AUC的代码。
+&#8195&#8195那么AUC值的含义是什么呢？根据(Fawcett, 2006)，AUC的值的含义是：
+The AUC value is equivalent to the probability that a randomly chosen positive example is ranked higher than a randomly chosen negative example.
+首先AUC值是一个概率值，当你随机挑选一个正样本以及一个负样本，当前的分类算法根据计算得到的Score值将这个正样本排在负样本前面的概率就是AUC值。当然，AUC值越大，当前的分类算法越有可能将正样本排在负样本前面，即能够更好的分类。
+
+&#8195&#8195既然已经有这么多评价标准，为什么还要使用ROC和AUC呢？因为ROC曲线有个很好的特性：当测试集中的正负样本的分布变化的时候，ROC曲线能够保持不变。在实际的数据集中经常会出现类不平衡（class imbalance）现象，即负样本比正样本多很多（或者相反），而且测试数据中的正负样本的分布也可能随着时间变化。下图是ROC曲线和Precision-Recall曲线的对比：
+
+![Alt text](./AUC_ROC曲线和P-R曲线的对比.jpeg)
+
+&#8195&#8195在上图中，(a)和(c)为ROC曲线，(b)和(d)为Precision-Recall曲线。(a)和(b)展示的是分类其在原始测试集（正负样本分布平衡）的结果，(c)和(d)是将测试集中负样本的数量增加到原来的10倍后，分类器的结果。可以明显的看出，ROC曲线基本保持原貌，而Precision-Recall曲线则变化较大。
+
+参考资料：http://alexkong.net/2013/06/introduction-to-auc-and-roc/
+
+####291.gradient descent 梯度下降
+-by lcx
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/卡片集合/卡片-291.jpg)
+
+#####1. 梯度
+在微积分里面，对多元函数的参数求∂偏导数，把求得的各个参数的偏导数以向量的形式写出来，就是梯度。比如函数f(x,y), 分别对x,y求偏导数，求得的梯度向量就是(∂f/∂x, ∂f/∂y)T,简称grad f(x,y)或者▽f(x,y)。对于在点(x0,y0)的具体梯度向量就是(∂f/∂x0, ∂f/∂y0)T.或者▽f(x0,y0)，如果是3个参数的向量梯度，就是(∂f/∂x, ∂f/∂y，∂f/∂z)T,以此类推。
+
+那么这个梯度向量求出来有什么意义呢？他的意义从几何意义上讲，就是函数变化增加最快的地方。具体来说，对于函数f(x,y),在点(x0,y0)，沿着梯度向量的方向就是(∂f/∂x0, ∂f/∂y0)T的方向是f(x,y)增加最快的地方。或者说，沿着梯度向量的方向，更加容易找到函数的最大值。反过来说，沿着梯度向量相反的方向，也就是 -(∂f/∂x0, ∂f/∂y0)T的方向，梯度减少最快，也就是更加容易找到函数的最小值。
+
+#####2. 梯度下降法算法详解
+######2.1 梯度下降的直观解释
+　　　　首先来看看梯度下降的一个直观的解释。比如我们在一座大山上的某处位置，由于我们不知道怎么下山，于是决定走一步算一步，也就是在每走到一个位置的时候，求解当前位置的梯度，沿着梯度的负方向，也就是当前最陡峭的位置向下走一步，然后继续求解当前位置梯度，向这一步所在位置沿着最陡峭最易下山的位置走一步。这样一步步的走下去，一直走到觉得我们已经到了山脚。当然这样走下去，有可能我们不能走到山脚，而是到了某一个局部的山峰低处。
+
+　　　　从上面的解释可以看出，梯度下降不一定能够找到全局的最优解，有可能是一个局部最优解。当然，如果损失函数是凸函数，梯度下降法得到的解就一定是全局最优解。
+![](https://raw.githubusercontent.com/6studentsfromsspku/sspku-300-concepts/master/lcx引用图片/291_1.png)
+######2.2 梯度下降的相关概念
+1. 步长（Learning rate）：步长决定了在梯度下降迭代的过程中，每一步沿梯度负方向前进的长度。用上面下山的例子，步长就是在当前这一步所在位置沿着最陡峭最易下山的位置走的那一步的长度。
+2. 特征（feature）：指的是样本中输入部分，比如2个单特征的样本$（x^{(0)},y^{(0)}）,（x^{(1)},y^{(1)}）$，则第一个样本特征为$x^{(0)}$，第一个样本输出为$y^{(0)}$。
+3. 假设函数（hypothesis function）：在监督学习中，为了拟合输入样本，而使用的假设函数，记为$h_{\theta}(x)$。比如对于单个特征的m个样本$（x^{(i)},y^{(i)}）(i=1,2,...m)$,可以采用拟合函数如下：$h_{\theta}(x) = \theta_0+\theta_1x$
+4. 损失函数（loss function）：为了评估模型拟合的好坏，通常用损失函数来度量拟合的程度。损失函数极小化，意味着拟合程度最好，对应的模型参数即为最优参数。在线性回归中，损失函数通常为样本输出和假设函数的差取平方。比如对于m个样本$（x_i,y_i）(i=1,2,...m)$,采用线性回归，损失函数为：$J(\theta_0, \theta_1) = \sum\limits_{i=1}^{m}(h_\theta(x_i) - y_i)^2$
+
+    其中$x_i$表示第i个样本特征，$y_i$表示第i个样本对应的输出，$h_\theta(x_i)$为假设函数。
+
+######2.3 梯度下降的详细算法
+1. 先决条件： 确认优化模型的假设函数和损失函数。
+比如对于线性回归，假设函数表示为$h_\theta(x_1, x_2, ...x_n) = \theta_0 + \theta_{1}x_1 + ... + \theta_{n}x_{n}$,(i = 0,1,2... n)为模型参数，$\theta_i $ , $\ x_i $(i = 0,1,2... n)为每个样本的n个特征值。这个表示可以简化，我们增加一个特征$\ x_0 =1$,这样$h_\theta(x_0, x_1, ...x_n) = \sum\limits_{i=0}^{n}\theta_{i}x_{i}$
+同样是线性回归，对应于上面的假设函数，损失函数为：$J(\theta_0, \theta_1..., \theta_n) = \frac{1}{2m}\sum\limits_{j=0}^{m}(h_\theta(x_0^{(j)}, x_1^{(j)}, ...x_n^{(j)}) - y_j)^2$
+
+2. 算法相关参数初始化：主要是初始化$\theta_0, \theta_1..., \theta_n$算法终止距离ε
+以及步长α。在没有任何先验知识的时候，将所有的θ
+初始化为0，将步长初始化为1。在调优的时候再优化。　　　　
+
+3. 算法过程：
+1）确定当前位置的损失函数的梯度，对于$\theta_i$,其梯度表达式如下：$\frac{\partial}{\partial\theta_i}J(\theta_0, \theta_1..., \theta_n)$
+2）用步长乘以损失函数的梯度，得到当前位置下降的距离，即
+$\alpha\frac{\partial}{\partial\theta_i}J(\theta_0, \theta_1..., \theta_n)$对应于前面登山例子中的某一步。
+3）确定是否所有的$\theta_i$梯度下降的距离都小于ε
+，如果小于ε则算法终止，当前所有的$\theta_i$(i=0,1,...n)即为最终结果。否则进入步骤4.
+4）更新所有的θ，对于$\theta_i$，其更新表达式如下。更新完毕后继续转入步骤1.
+$\theta_i = \theta_i - \alpha\frac{\partial}{\partial\theta_i}J(\theta_0, \theta_1..., \theta_n)$
+下面用线性回归的例子来具体描述梯度下降。假设我们的样本是
+$(x_1^{(0)}, x_2^{(0)}, ...x_n^{(0)}, y_0), (x_1^{(1)}, x_2^{(1)}, ...x_n^{(1)},y_1), ... (x_1^{(m)}, x_2^{(m)}, ...x_n^{(m)}, y_m)$,损失函数如前面先决条件所述：$J(\theta_0, \theta_1..., \theta_n) = \frac{1}{2m}\sum\limits_{j=0}^{m}(h_\theta(x_0^{(j)}, x_1^{(j)}, ...x_n^{(j)})- y_j)^2$
+则在算法过程步骤1中对于$\theta_i$的偏导数计算如下：
+$\frac{\partial}{\partial\theta_i}J(\theta_0, \theta_1..., \theta_n)= \frac{1}{m}\sum\limits_{j=0}^{m}(h_\theta(x_0^{(j)}, x_1^{(j)}, ...x_n^{(j)}) - y_j)x_i^{(j)}$
+由于样本中没有x0
+上式中令所有的$x_0^{j}$为1.
+步骤4中$\theta_i$的更新表达式如下：
+$\theta_i = \theta_i - \alpha\frac{1}{m}\sum\limits_{j=0}^{m}(h_\theta(x_0^{(j)}, x_1^{(j)}, ...x_n^{j}) - y_j)x_i^{(j)}$
+
+从这个例子可以看出当前点的梯度方向是由所有的样本决定的，加$\frac{1}{m}$是为了好理解。由于步长也为常数，他们的乘机也为常数，所以这里$\alpha\frac{1}{m}$可以用一个常数表示。
+
+#####参考文献
+[梯度下降](https://www.cnblogs.com/pinard/p/5970503.html)
+####292.Gradient Descent
+![292](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-292.jpg?raw=true)
+
+####293.
+####294.
+####295.
+####296.
+####297.
+####298.Greek Letters(希腊字母)：
+![298](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-298.jpg?raw=true)
+$$T \quad \tau \quad tau$$
+$$\Upsilon \quad \upsilon \quad upsilon $$
+$$\Phi \quad \phi \quad phi$$
+$$X \quad \chi \quad chi $$
+$$\Psi \quad \psi \quad psi$$
+$$\Omega \quad \omega \quad omega$$
+
+####299.
+####300.
+####301.
+
+
+以下为曾经所做，还未并入。
+
+
+
+
+
+
+
+
+
+
+
+
+
+####?.The Argument For Parametric Models（）
+当数据生成函数大致匹配参数概率分布时，我们可以将我们的计算仅限于其参数。这使得仅使用少量信息就知道很多。 许多概率分布的灵活性意味着如果选择分布族(举例：正态跟学生T)通常不是问题 然而，范围匹配是重要的。例如，如果我们想要一个概率，我们就不应该选择输出数大于1的概率分布。
+
+####？Variance for feature selection（特征选择中的方差）：
+by-wgw
+![31](https://github.com/6studentsfromsspku/sspku-300-concepts/blob/master/%E5%8D%A1%E7%89%87%E9%9B%86%E5%90%88/%E5%8D%A1%E7%89%87-31.jpg?raw=true)
+&#8195;&#8195;特征选择中的方差，方差是特征含有的信息的一个度量，方差越大，说明特征中含有的信息越多，方差越小，说明特征中含有的信息越少，方差越小，则特征越不能很好的训练一个模型，反过来方差越大，越能很好的训练出一个模型。所以在特征选择中，我们应尽量选择那些方差较大的特征。
